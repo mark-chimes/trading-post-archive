@@ -17,9 +17,16 @@ type alias Gold =
     Int
 
 
+type alias Customer =
+    { name : String
+    }
+
+
 type alias GameState =
     { wood : Wood
+    , woodExpanded : Bool
     , gold : Gold
+    , customers : List Customer
     }
 
 
@@ -28,7 +35,9 @@ init =
     let
         state =
             { wood = 5
+            , woodExpanded = True
             , gold = 20
+            , customers = [ { name = "Steve" } ]
             }
     in
         ( state, Cmd.none )
@@ -41,6 +50,8 @@ init =
 type Msg
     = Tick Time
     | ChopWood
+    | ExpandWood
+    | CollapseWood
     | SellWood
 
 
@@ -66,9 +77,33 @@ update msg state =
             else
                 ( state, Cmd.none )
 
+        ExpandWood ->
+            ( { state | woodExpanded = True }, Cmd.none )
+
+        CollapseWood ->
+            ( { state | woodExpanded = False }, Cmd.none )
+
 
 
 -- VIEW
+
+
+gameHeader : String -> Html Msg
+gameHeader title =
+    header []
+        [ h1 [ tabindex 0 ] [ text title ] ]
+
+
+subheader : String -> Html Msg
+subheader title =
+    header []
+        [ h2 [ tabindex 0 ] [ text title ] ]
+
+
+item : String -> Html Msg
+item itemName =
+    header []
+        [ h3 [ tabindex 0 ] [ text itemName ] ]
 
 
 selectableText : String -> Html msg
@@ -76,33 +111,43 @@ selectableText string =
     span [ tabindex 0 ] [ text string ]
 
 
-viewHeader : String -> Html Msg
-viewHeader title =
-    header []
-        [ h1 [ tabindex 0 ] [ text title ] ]
-
-
-viewGame : GameState -> Html Msg
-viewGame state =
+viewShop : GameState -> Html Msg
+viewShop state =
     div [ id "game" ]
         [ div []
             [ selectableText ("Gold: " ++ (toString state.gold)) ]
-        , div []
-            [ selectableText ("Wood: " ++ (toString state.wood)) ]
-        , div []
-            [ button [ onClick ChopWood ] [ text ("Chop Wood (" ++ (toString state.wood) ++ ")") ]
-            ]
-        , div []
-            [ button [ onClick SellWood, disabled (state.wood <= 0) ] [ text ("Sell 1 wood for 5 gold (" ++ (toString state.gold) ++ " gp)") ]
-            ]
+        , div [ class "collapse" ]
+            (if state.woodExpanded then
+                [ button [ onClick CollapseWood ] [ text ("Wood (expanded)") ]
+                , div []
+                    [ selectableText ("Quantity: " ++ (toString state.wood))
+                    , button [ onClick ChopWood ] [ text ("Chop Wood (" ++ (toString state.wood) ++ ")") ]
+                    , button [ onClick SellWood, disabled (state.wood <= 0) ] [ text ("Sell 1 wood for 5 gold (" ++ (toString state.gold) ++ " gp)") ]
+                    ]
+                ]
+             else
+                [ button [ onClick ExpandWood ] [ text ("Wood: " ++ (toString state.wood)) ]
+                ]
+            )
+        ]
+
+
+viewCustomers : GameState -> Html Msg
+viewCustomers state =
+    div []
+        [ selectableText
+            (Maybe.withDefault "No customers" <| List.head <| List.map (\customer -> customer.name) state.customers)
         ]
 
 
 view : GameState -> Html Msg
 view state =
     div [ class "content" ]
-        [ viewHeader "Trading Post!"
-        , viewGame state
+        [ gameHeader "Trading Post!"
+        , subheader "Shop"
+        , viewShop state
+        , subheader "Customers"
+        , viewCustomers state
         ]
 
 
