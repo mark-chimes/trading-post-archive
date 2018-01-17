@@ -71,24 +71,29 @@ update msg state =
 -- VIEW
 
 
+selectableText : String -> Html msg
+selectableText string =
+    span [ tabindex 0 ] [ text string ]
+
+
 viewHeader : String -> Html Msg
 viewHeader title =
     header []
-        [ h1 [] [ text title ] ]
+        [ h1 [ tabindex 0 ] [ text title ] ]
 
 
 viewGame : GameState -> Html Msg
 viewGame state =
     div [ id "game" ]
         [ div []
-            [ text ("Gold: " ++ (toString state.gold)) ]
+            [ selectableText ("Gold: " ++ (toString state.gold)) ]
         , div []
-            [ text ("Wood: " ++ (toString state.wood))
-            , button [ onClick ChopWood ] [ text "Chop Wood" ]
+            [ selectableText ("Wood: " ++ (toString state.wood)) ]
+        , div []
+            [ button [ onClick ChopWood ] [ text ("Chop Wood (" ++ (toString state.wood) ++ ")") ]
             ]
         , div []
-            [ text ("Sell Wood")
-            , button [ onClick SellWood, disabled (state.wood <= 0) ] [ text ("Sell 1 wood for 5 gold") ]
+            [ button [ onClick SellWood, disabled (state.wood <= 0) ] [ text ("Sell 1 wood for 5 gold (" ++ (toString state.gold) ++ " gp)") ]
             ]
         ]
 
