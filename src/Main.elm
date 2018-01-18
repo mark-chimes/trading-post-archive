@@ -35,7 +35,7 @@ init =
     let
         state =
             { wood = 5
-            , woodExpanded = True
+            , woodExpanded = False
             , gold = 20
             , customers = [ { name = "Steve" } ]
             }
@@ -50,8 +50,7 @@ init =
 type Msg
     = Tick Time
     | ChopWood
-    | ExpandWood
-    | CollapseWood
+    | SwitchWood
     | SellWood
 
 
@@ -77,11 +76,8 @@ update msg state =
             else
                 ( state, Cmd.none )
 
-        ExpandWood ->
-            ( { state | woodExpanded = True }, Cmd.none )
-
-        CollapseWood ->
-            ( { state | woodExpanded = False }, Cmd.none )
+        SwitchWood ->
+            ( { state | woodExpanded = not state.woodExpanded }, Cmd.none )
 
 
 
@@ -111,22 +107,34 @@ selectableText string =
     span [ tabindex 0 ] [ text string ]
 
 
-viewShop : GameState -> Html Msg
+viewShop :
+    GameState
+    -> Html Msg
 viewShop state =
     div [ id "game" ]
         [ div []
             [ selectableText ("Gold: " ++ (toString state.gold)) ]
         , div [ class "collapse" ]
             (if state.woodExpanded then
-                [ button [ onClick CollapseWood ] [ text ("Wood (expanded)") ]
+                [ button
+                    [ onClick SwitchWood
+                    ]
+                    [ text ("Wood (expanded)") ]
                 , div []
                     [ selectableText ("Quantity: " ++ (toString state.wood))
-                    , button [ onClick ChopWood ] [ text ("Chop Wood (" ++ (toString state.wood) ++ ")") ]
-                    , button [ onClick SellWood, disabled (state.wood <= 0) ] [ text ("Sell 1 wood for 5 gold (" ++ (toString state.gold) ++ " gp)") ]
+                    , div []
+                        [ selectableText ("Commands (wood): ")
+                        , button [ onClick ChopWood ] [ text ("Chop Wood") ]
+                        , button
+                            [ onClick SellWood
+                            , disabled (state.wood <= 0)
+                            ]
+                            [ text ("Sell 1 wood for 5 gold") ]
+                        ]
                     ]
                 ]
              else
-                [ button [ onClick ExpandWood ] [ text ("Wood: " ++ (toString state.wood)) ]
+                [ button [ onClick SwitchWood ] [ text ("Wood: " ++ (toString state.wood)) ]
                 ]
             )
         ]
