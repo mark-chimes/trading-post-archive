@@ -22,9 +22,14 @@ type alias Customer =
     }
 
 
+type ExpandedState
+    = Expanded
+    | Collapsed
+
+
 type alias GameState =
     { wood : Wood
-    , woodExpanded : Bool
+    , woodExpanded : ExpandedState
     , gold : Gold
     , customers : List Customer
     }
@@ -35,7 +40,7 @@ init =
     let
         state =
             { wood = 5
-            , woodExpanded = False
+            , woodExpanded = Collapsed
             , gold = 20
             , customers = [ { name = "Steve" } ]
             }
@@ -77,7 +82,17 @@ update msg state =
                 ( state, Cmd.none )
 
         SwitchWood ->
-            ( { state | woodExpanded = not state.woodExpanded }, Cmd.none )
+            ( { state
+                | woodExpanded =
+                    case state.woodExpanded of
+                        Expanded ->
+                            Collapsed
+
+                        Collapsed ->
+                            Expanded
+              }
+            , Cmd.none
+            )
 
 
 
@@ -115,27 +130,29 @@ viewShop state =
         [ div []
             [ selectableText ("Gold: " ++ (toString state.gold)) ]
         , div [ class "collapse" ]
-            (if state.woodExpanded then
-                [ button
-                    [ onClick SwitchWood
-                    ]
-                    [ text ("Wood (expanded)") ]
-                , div []
-                    [ selectableText ("Quantity: " ++ (toString state.wood))
+            (case state.woodExpanded of
+                Expanded ->
+                    [ button
+                        [ onClick SwitchWood
+                        ]
+                        [ text ("Wood (expanded)") ]
                     , div []
-                        [ selectableText ("Commands (wood): ")
-                        , button [ onClick ChopWood ] [ text ("Chop Wood") ]
-                        , button
-                            [ onClick SellWood
-                            , disabled (state.wood <= 0)
+                        [ selectableText ("Quantity: " ++ (toString state.wood))
+                        , div []
+                            [ selectableText ("Commands (wood): ")
+                            , button [ onClick ChopWood ] [ text ("Chop Wood") ]
+                            , button
+                                [ onClick SellWood
+                                , disabled (state.wood <= 0)
+                                ]
+                                [ text ("Sell 1 wood for 5 gold") ]
                             ]
-                            [ text ("Sell 1 wood for 5 gold") ]
                         ]
                     ]
-                ]
-             else
-                [ button [ onClick SwitchWood ] [ text ("Wood: " ++ (toString state.wood)) ]
-                ]
+
+                Collapsed ->
+                    [ button [ onClick SwitchWood ] [ text ("Wood: " ++ (toString state.wood)) ]
+                    ]
             )
         ]
 
