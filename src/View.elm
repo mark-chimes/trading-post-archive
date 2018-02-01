@@ -36,7 +36,9 @@ viewShop state =
     div [ id "game" ]
         [ div [] [ selectableText ("Gold: " ++ (toString state.gold)) ]
         , div [] [ button [ onClick ViewShop ] [ text ("View Shop") ] ]
-        , div [] [ button [ onClick (SpeakTo { name = "Steve" }) ] [ text ("Speak to Steve") ] ]
+        , div []
+            [ (selectableText ("Speaking to " ++ maybeCustomerToString state.speakingTo ++ "."))
+            ]
         ]
 
 
@@ -44,9 +46,6 @@ viewCustomers : GameState -> Html Msg
 viewCustomers state =
     div []
         [ div [] [ listOfCustomers state.customers ]
-        , div []
-            [ (selectableText ("Speaking to " ++ maybeCustomerToString state.speakingTo ++ "."))
-            ]
         ]
 
 
@@ -68,7 +67,7 @@ listOfCustomers lst =
 
         _ ->
             (ol []
-                (List.map (\customer -> li [] [ selectableText customer.name ]) lst)
+                (List.map (\customer -> li [] [ selectableText customer.name, button [ onClick (SpeakTo customer) ] [ text ("Speak to " ++ customer.name ++ ".") ] ]) lst)
             )
 
 
