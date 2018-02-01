@@ -34,42 +34,42 @@ viewShop :
     -> Html Msg
 viewShop state =
     div [ id "game" ]
-        [ div []
-            [ selectableText ("Gold: " ++ (toString state.gold)) ]
-        , div [ class "collapse" ]
-            (case state.woodExpanded of
-                Expanded ->
-                    [ button
-                        [ onClick SwitchWood
-                        ]
-                        [ text ("Wood (expanded)") ]
-                    , div []
-                        [ selectableText ("Quantity: " ++ (toString state.wood))
-                        , div []
-                            [ selectableText ("Commands (wood): ")
-                            , button [ onClick ChopWood ] [ text ("Chop Wood") ]
-                            , button
-                                [ onClick SellWood
-                                , disabled (state.wood <= 0)
-                                ]
-                                [ text ("Sell 1 wood for 5 gold") ]
-                            ]
-                        ]
-                    ]
-
-                Collapsed ->
-                    [ button [ onClick SwitchWood ] [ text ("Wood: " ++ (toString state.wood)) ]
-                    ]
-            )
+        [ div [] [ selectableText ("Gold: " ++ (toString state.gold)) ]
+        , div [] [ button [ onClick ViewShop ] [ text ("View Shop") ] ]
+        , div [] [ button [ onClick (SpeakTo { name = "Steve" }) ] [ text ("Speak to Steve") ] ]
         ]
 
 
 viewCustomers : GameState -> Html Msg
 viewCustomers state =
     div []
-        [ selectableText
-            (Maybe.withDefault "No customers" <| List.head <| List.map (\customer -> customer.name) state.customers)
+        [ div [] [ listOfCustomers state.customers ]
+        , div []
+            [ (selectableText ("Speaking to " ++ maybeCustomerToString state.speakingTo ++ "."))
+            ]
         ]
+
+
+maybeCustomerToString : Maybe Customer -> String
+maybeCustomerToString maybeCustomer =
+    case maybeCustomer of
+        Nothing ->
+            "no-one"
+
+        Just customer ->
+            customer.name
+
+
+listOfCustomers : List Customer -> Html Msg
+listOfCustomers lst =
+    case lst of
+        [] ->
+            (div [] [ selectableText "No-one" ])
+
+        _ ->
+            (ol []
+                (List.map (\customer -> li [] [ selectableText customer.name ]) lst)
+            )
 
 
 root : GameState -> Html Msg
