@@ -13,6 +13,7 @@ init =
             { gold = 5
             , customers = [ { name = "Steve" }, { name = "Charlotte" } ]
             , speakingTo = Nothing
+            , viewState = { shopExpanded = Collapsed, customersExpanded = Collapsed }
             }
     in
         ( state, Cmd.none )
@@ -30,6 +31,24 @@ update msg state =
 
         ViewShop ->
             ( { state | speakingTo = Nothing }, Cmd.none )
+
+        Expand contentType ->
+            ( updateExpansionState state contentType, Cmd.none )
+
+
+updateExpansionState : GameState -> ContentType -> GameState
+updateExpansionState state contentType =
+    { state | viewState = updateExpansionViewState state.viewState contentType Expanded }
+
+
+updateExpansionViewState : ViewState -> ContentType -> ExpansionState -> ViewState
+updateExpansionViewState viewState contentType expansionState =
+    case contentType of
+        Shop ->
+            { viewState | shopExpanded = expansionState }
+
+        Customers ->
+            { viewState | customersExpanded = expansionState }
 
 
 subscriptions : GameState -> Sub Msg

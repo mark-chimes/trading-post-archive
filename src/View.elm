@@ -33,20 +33,30 @@ viewShop :
     GameState
     -> Html Msg
 viewShop state =
-    div [ id "game" ]
-        [ div [] [ selectableText ("Gold: " ++ (toString state.gold)) ]
-        , div [] [ button [ onClick ViewShop ] [ text ("View Shop") ] ]
-        , div []
-            [ (selectableText ("Speaking to " ++ maybeCustomerToString state.speakingTo ++ "."))
-            ]
-        ]
+    case state.viewState.shopExpanded of
+        Collapsed ->
+            div [] [ button [ onClick (Expand Shop) ] [ text ("Expand Shop") ] ]
+
+        Expanded ->
+            div [ id "game" ]
+                [ div [] [ selectableText ("Gold: " ++ (toString state.gold)) ]
+                , div [] [ button [ onClick ViewShop ] [ text ("View Shop") ] ]
+                , div []
+                    [ (selectableText ("Speaking to " ++ maybeCustomerToString state.speakingTo ++ "."))
+                    ]
+                ]
 
 
 viewCustomers : GameState -> Html Msg
 viewCustomers state =
-    div []
-        [ div [] [ listOfCustomers state.customers ]
-        ]
+    case state.viewState.customersExpanded of
+        Collapsed ->
+            div [] [ button [ onClick (Expand Customers) ] [ text ("Expand Customers") ] ]
+
+        Expanded ->
+            div []
+                [ div [] [ listOfCustomers state.customers ]
+                ]
 
 
 maybeCustomerToString : Maybe Customer -> String
@@ -67,7 +77,7 @@ listOfCustomers lst =
 
         _ ->
             (ol []
-                (List.map (\customer -> li [] [ selectableText customer.name, button [ onClick (SpeakTo customer) ] [ text ("Speak to " ++ customer.name ++ ".") ] ]) lst)
+                (List.map (\customer -> li [ tabindex 0 ] [ selectableText customer.name, button [ onClick (SpeakTo customer) ] [ text ("Speak to " ++ customer.name ++ ".") ] ]) lst)
             )
 
 
