@@ -1,6 +1,8 @@
 module State exposing (init, update, subscriptions)
 
 import Types exposing (..)
+import Dom
+import Task
 
 
 -- MODEL
@@ -9,14 +11,15 @@ import Types exposing (..)
 init : ( GameState, Cmd Msg )
 init =
     let
-        state =
+        gameState =
             { gold = 5
             , customers = [ { name = "Steve" }, { name = "Charlotte" } ]
             , speakingTo = Nothing
-            , viewState = { shopExpanded = Collapsed, customersExpanded = Collapsed }
+            , viewState = { shopExpanded = Collapse, customersExpanded = Collapse }
+            , error = Nothing
             }
     in
-        ( state, Cmd.none )
+        ( gameState, Cmd.none )
 
 
 
@@ -24,25 +27,42 @@ init =
 
 
 update : Msg -> GameState -> ( GameState, Cmd Msg )
-update msg state =
+update msg gameState =
     case msg of
-        SpeakTo customer ->
-            ( { state | speakingTo = Just customer }, Cmd.none )
+        Noop ->
+            ( gameState, Cmd.none )
+
+        SpeakTo maybeCustomer ->
+            ( { gameState | speakingTo = maybeCustomer }, Cmd.none )
 
         ViewShop ->
-            ( { state | speakingTo = Nothing }, Cmd.none )
+            ( { gameState | speakingTo = Nothing }, Cmd.none )
 
-        Expand contentType ->
-            ( updateExpansionState state contentType, Cmd.none )
+        Resize expansionState contentType id ->
+            ( updateExpansionState gameState expansionState contentType
+            , Dom.focus id |> Task.attempt FocusResult
+            )
+
+        FocusOn id ->
+            ( gameState, Dom.focus id |> Task.attempt FocusResult )
+
+        FocusResult result ->
+            -- handle success or failure here
+            case result of
+                Err (Dom.NotFound id) ->
+                    { gameState | error = Just ("Could not find dom id: " ++ id) } ! []
+
+                Ok () ->
+                    { gameState | error = Nothing } ! []
 
 
-updateExpansionState : GameState -> ContentType -> GameState
-updateExpansionState state contentType =
-    { state | viewState = updateExpansionViewState state.viewState contentType Expanded }
+updateExpansionState : GameState -> ExpansionState -> ContentType -> GameState
+updateExpansionState gameState expansionState contentType =
+    { gameState | viewState = updateExpansionViewState gameState.viewState expansionState contentType }
 
 
-updateExpansionViewState : ViewState -> ContentType -> ExpansionState -> ViewState
-updateExpansionViewState viewState contentType expansionState =
+updateExpansionViewState : ViewState -> ExpansionState -> ContentType -> ViewState
+updateExpansionViewState viewState expansionState contentType =
     case contentType of
         Shop ->
             { viewState | shopExpanded = expansionState }

@@ -34,28 +34,35 @@ viewShop :
     -> Html Msg
 viewShop state =
     case state.viewState.shopExpanded of
-        Collapsed ->
-            div [] [ button [ onClick (Expand Shop) ] [ text ("Expand Shop") ] ]
+        Collapse ->
+            div [] [ button [ id "expandShop", onClick (Resize Expand Shop "collapseShop") ] [ text ("Expand Shop") ] ]
 
-        Expanded ->
+        Expand ->
             div [ id "game" ]
-                [ div [] [ selectableText ("Gold: " ++ (toString state.gold)) ]
+                [ div []
+                    [ button [ id "collapseShop", onClick (Resize Collapse Shop "expandShop") ] [ text ("Collapse Shop") ] ]
+                , div [] [ selectableText ("Gold: " ++ (toString state.gold)) ]
                 , div [] [ button [ onClick ViewShop ] [ text ("View Shop") ] ]
-                , div []
-                    [ (selectableText ("Speaking to " ++ maybeCustomerToString state.speakingTo ++ "."))
-                    ]
                 ]
 
 
 viewCustomers : GameState -> Html Msg
 viewCustomers state =
     case state.viewState.customersExpanded of
-        Collapsed ->
-            div [] [ button [ onClick (Expand Customers) ] [ text ("Expand Customers") ] ]
+        Collapse ->
+            div [] [ button [ id "expandCustomers", onClick (Resize Expand Customers "collapseCustomers") ] [ text ("Expand Customers") ] ]
 
-        Expanded ->
+        Expand ->
             div []
-                [ div [] [ listOfCustomers state.customers ]
+                [ div []
+                    [ button [ id "collapseCustomers", onClick (Resize Collapse Customers "expandCustomers") ] [ text ("Collapse Customers") ] ]
+                , div []
+                    [ (selectableText ("Speaking to " ++ maybeCustomerToString state.speakingTo ++ "."))
+                    ]
+                , div [] [ button [ onClick (SpeakTo Nothing) ] [ text ("Speak to No-One") ] ]
+                , div
+                    []
+                    [ listOfCustomers state.customers ]
                 ]
 
 
@@ -77,7 +84,16 @@ listOfCustomers lst =
 
         _ ->
             (ol []
-                (List.map (\customer -> li [ tabindex 0 ] [ selectableText customer.name, button [ onClick (SpeakTo customer) ] [ text ("Speak to " ++ customer.name ++ ".") ] ]) lst)
+                (List.map
+                    (\customer ->
+                        li [ tabindex 0 ]
+                            [ selectableText customer.name
+                            , button [ onClick <| SpeakTo <| Just customer ]
+                                [ text ("Speak to " ++ customer.name ++ ".") ]
+                            ]
+                    )
+                    lst
+                )
             )
 
 
@@ -85,8 +101,14 @@ root : GameState -> Html Msg
 root state =
     div [ class "content" ]
         [ gameHeader "Trading Post!"
+        , div
+            []
+            [ span [ tabindex 0, id "testText" ] [ text "Test Text" ] ]
+        , hr [] []
         , subheader "Shop"
         , viewShop state
+        , hr [] []
         , subheader "Customers"
         , viewCustomers state
+        , hr [] []
         ]

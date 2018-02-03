@@ -1,5 +1,7 @@
 module Types exposing (..)
 
+import Dom
+
 
 type alias Gold =
     Int
@@ -15,6 +17,7 @@ type alias GameState =
     , customers : List Customer
     , speakingTo : Maybe Customer
     , viewState : ViewState
+    , error : Maybe String
     }
 
 
@@ -30,11 +33,18 @@ type ContentType
 
 
 type ExpansionState
-    = Expanded
-    | Collapsed
+    = Expand
+    | Collapse
+
+
+type alias ContentId =
+    String
 
 
 type Msg
-    = SpeakTo Customer
+    = Noop
+    | SpeakTo (Maybe Customer)
     | ViewShop
-    | Expand ContentType
+    | Resize ExpansionState ContentType ContentId
+    | FocusOn String
+    | FocusResult (Result Dom.Error ())
