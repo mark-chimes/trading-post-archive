@@ -6,6 +6,6 @@ import View exposing (..)
 import Html exposing (..)
 
 
-main : Program Never GameState Msg
+main : Program Never Model Msg
 main =
-    Html.program { init = init, view = root, update = update, subscriptions = subscriptions }
+    Html.program { init = init, view = view, update = update, subscriptions = subscriptions }

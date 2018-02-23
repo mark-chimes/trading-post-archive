@@ -1,35 +1,42 @@
 port module State exposing (init, update, subscriptions)
 
 import Types exposing (..)
+import Material
 
 
 -- MODEL
 
 
-init : ( GameState, Cmd Msg )
+init : ( Model, Cmd Msg )
 init =
     let
-        gameState =
-            {}
+        model =
+            { -- Boilerplate: Always use this initial Mdl model store.
+              mdl = Material.model
+            }
     in
-        ( gameState, Cmd.none )
+        ( model, Cmd.none )
 
 
 
 -- UPDATE
 
 
-update : Msg -> GameState -> ( GameState, Cmd Msg )
-update msg gameState =
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
     case msg of
         Noop ->
-            ( gameState, Cmd.none )
+            ( model, Cmd.none )
+
+        -- Boilerplate: Mdl action handler.
+        Mdl msg_ ->
+            Material.update Mdl msg_ model
 
 
 
 -- SUBSCRIPTIONS
 
 
-subscriptions : GameState -> Sub Msg
+subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none

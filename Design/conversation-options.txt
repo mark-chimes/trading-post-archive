@@ -1,0 +1,59 @@
+-Conversation Actions-
+Listen
+Inquire (Question)
+Inform (Information)
+Offer (Item / Trade)
+Chatter
+
+-Tone-
+Attentive, Bored
+Laughing, Friendly, Relaxed, Aggressive, Apologetic, Subservient, Humble
+
+-Inquire-
+About: Person, Item, Event,
+
+-Inform-
+About: Person, Item, Event
+
+-Offer-
+Receive: Item, Information
+Give: Item, Information
+
+-Chatter-
+Greet, Small Talk, Compliment, Insult, Joke
+
+Example Conversations: 
+
+Player: Hello, and welcome to my humble store! 
+[Greeting: Welcome, Enthusiastic, Mention store: My Humble Store]
+Client: Hi there, I'm just looking for something to help me defend myself against wild animals. 
+[Desires...]
+Player: Ah, yes, I believe I have exactly what you are looking for! Here, look at this steel broadsword. 
+[Offer Item, Confident, Item#ID (Steel Broadsword)]
+Client: *Examines broadsword*
+Player: It is of the finest quality cold-wrought steel, forged by Dwarves from the town of Delheim!
+[Promote Item, Exaggerate: Cold-wrought steel / forged by Dwarves -> Delheim]
+Client: Hmm... sounds pricey. How much are you asking? 
+Player: For you, my good lady, a fair price! Only 120 gold!
+[Name customer: anonymous, respectful, Request 120 gp]
+Client: 120 gold! I want to defend myself against wild animals, not slay a dragon! Don't you have anything more in my price range? 
+Player: Ah, but you cannot pass up on such a good item! It suits your armour so well! For you, I will lower my price to just 90 gold!
+[Insist, Promote: Suits customer -> Armour, Request 90 gp]
+Client: Well, now, I suppose I can't really say no to that!
+Player: And just because you are such a wonderful customer, I shall throw in a free whetstone to keep your blade sharp! 
+[Compliment Customer: Generic, Offer Item: For Item#ID (Steel Broadsword) -> Whetstone]
+Client: How wonderful! *Accepts trade*
+Player: Is there anything else I can help you with? 
+[Ask Question: Anything Else, Polite]
+Client: Ah, yes, I could do with some food for the road. How about some trail mix! 
+Player: Certainly. That will be 99 copper per packet.
+[Acknowledge: Enthusiastic, Request 99 copper / item]
+Client: Then I shall take three packets!
+Player: Here you are! Three packets of trail mix for 2 silvers and 97 copper
+[Acknowledge: Enthusiastic, Accept Offer at Given Price]
+Client: Keep the change! 
+Player: Thank you! Is there anything else I can help you with?
+[Ask Question: Anything Else, Polite]
+Client: No, that will be all!
+Player: Thank you for your patronage! Come again, soon! 
+[Greeting: Goodbye, Thank you, Come again]
