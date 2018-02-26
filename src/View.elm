@@ -12,6 +12,7 @@ import Material.Elevation as Elevation
 import Material.Button as Button
 import Material.Tabs as Tabs
 import Material.Toggles as Toggles
+import Material.Textfield as Textfield
 
 
 type alias Mop c m =
@@ -60,30 +61,23 @@ viewHeader model =
         ]
 
 
-style : Int -> List (Style a)
-style h =
+style : List (Style a)
+style =
     [ css "text-sizing" "border-box"
     , css "background-color" "#BDBDBD"
-    , css "padding-left" "8px"
-    , css "padding-right" "8px"
     , css "padding-top" "16px"
     , css "padding-bottom" "16px"
     , css "color" "white"
     ]
 
 
-democell : Int -> List (Style a) -> List (Html a) -> Cell a
-democell k styling =
-    cell <| List.concat [ style k, styling ]
+basicCell : List (Style a) -> List (Html a) -> Cell a
+basicCell styling =
+    cell <| List.concat [ style, styling ]
 
 
-std : List (Style a) -> List (Html a) -> Cell a
-std =
-    democell 400
-
-
-color1 : () -> Mop c m
-color1 () =
+color1 : Mop c m
+color1 =
     Color.background (Color.color Color.Brown Color.S50)
 
 
@@ -94,14 +88,14 @@ gridBoxElevation =
 
 gridBoxWithSizeAndContent : Int -> List (Html m) -> Cell m
 gridBoxWithSizeAndContent boxSize content =
-    std [ gridBoxElevation, size All boxSize, color1 (), Color.text Color.black ] content
+    basicCell [ gridBoxElevation, size All boxSize, color1, Color.text Color.black ] content
 
 
 viewBody : Model -> Html Msg
 viewBody model =
     div
         []
-        [ [ gridBoxWithSizeAndContent 12
+        [ [ gridBoxWithSizeAndContent 4
                 [ Tabs.render Mdl
                     [ 0 ]
                     model.mdl
@@ -118,21 +112,6 @@ viewBody model =
                         [ Options.center ]
                         [ Options.span [ css "width" "4px" ] []
                         , text "Appearance"
-                        ]
-                    , Tabs.label
-                        [ Options.center ]
-                        [ Options.span [ css "width" "4px" ] []
-                        , text "Notes"
-                        ]
-                    , Tabs.label
-                        [ Options.center ]
-                        [ Options.span [ css "width" "4px" ] []
-                        , text "Conversation Log"
-                        ]
-                    , Tabs.label
-                        [ Options.center ]
-                        [ Options.span [ css "width" "4px" ] []
-                        , text "Trade Offers"
                         ]
                     ]
                     [{--
@@ -160,28 +139,8 @@ viewBody model =
                     [ text "Modify Description"
                     ]
                 ]
-          , gridBoxWithSizeAndContent 12
-                [ Options.styled p
-                    [ Typo.headline ]
-                    [ text "Next line of speech" ]
-                , Options.styled p
-                    [ Typo.body1 ]
-                    [ text "I have a wonderful item for you! The Sword of Notre Dame!" ]
-                , Button.render Mdl
-                    [ 0 ]
-                    model.mdl
-                    [ Button.raised
-                    ]
-                    [ text "Speak"
-                    ]
-                ]
-          ]
-            |> grid []
-        , [ gridBoxWithSizeAndContent 12
-                [ Options.styled p
-                    [ Typo.headline ]
-                    [ text "Speech Action" ]
-                , Tabs.render Mdl
+          , gridBoxWithSizeAndContent 4
+                [ Tabs.render Mdl
                     [ 1 ]
                     model.mdl
                     [ Tabs.ripple
@@ -191,37 +150,17 @@ viewBody model =
                     [ Tabs.label
                         [ Options.center ]
                         [ Options.span [ css "width" "4px" ] []
-                        , text "Item Offer"
+                        , text "Notes"
                         ]
                     , Tabs.label
                         [ Options.center ]
                         [ Options.span [ css "width" "4px" ] []
-                        , text "Item Request"
+                        , text "Log"
                         ]
                     , Tabs.label
                         [ Options.center ]
                         [ Options.span [ css "width" "4px" ] []
-                        , text "Listen"
-                        ]
-                    , Tabs.label
-                        [ Options.center ]
-                        [ Options.span [ css "width" "4px" ] []
-                        , text "Information Offer"
-                        ]
-                    , Tabs.label
-                        [ Options.center ]
-                        [ Options.span [ css "width" "4px" ] []
-                        , text "Inquiry"
-                        ]
-                    , Tabs.label
-                        [ Options.center ]
-                        [ Options.span [ css "width" "4px" ] []
-                        , text "Inform"
-                        ]
-                    , Tabs.label
-                        [ Options.center ]
-                        [ Options.span [ css "width" "4px" ] []
-                        , text "Chatter"
+                        , text "Trade"
                         ]
                     ]
                     [{--
@@ -233,7 +172,133 @@ viewBody model =
                         exampleTab
                         --}
                     ]
+                , Textfield.render Mdl
+                    [ 12 ]
+                    model.mdl
+                    [ Textfield.label "Notes"
+                    , Textfield.textarea
+                    ]
+                    []
+                ]
+          , gridBoxWithSizeAndContent 4
+                [ Options.styled p
+                    [ Typo.headline ]
+                    [ text "Preview and Speak" ]
                 , Options.styled p
+                    [ Typo.body1 ]
+                    [ text "I have a wonderful item for you! The Sword of Notre Dame!" ]
+                , Button.render Mdl
+                    [ 0 ]
+                    model.mdl
+                    [ Button.raised
+                    ]
+                    [ text "Speak"
+                    ]
+                ]
+          , gridBoxWithSizeAndContent 6
+                [ Options.styled p
+                    [ Typo.headline ]
+                    [ text "Action" ]
+                , Options.styled p
+                    [ Typo.subhead
+                    , css "padding-top" "16px"
+                    ]
+                    [ text "Type of Speech" ]
+                , Toggles.radio
+                    Mdl
+                    [ 0 ]
+                    model.mdl
+                    [ Toggles.value True
+                    , Toggles.group "MyRadioGroup"
+                    , css "padding-left" "16px"
+                    , css "padding-right" "16px"
+                    ]
+                    [ text "Item Offer" ]
+                , Toggles.radio Mdl
+                    [ 1 ]
+                    model.mdl
+                    [ Toggles.value False
+                    , Toggles.group "MyRadioGroup"
+                    , css "padding-left" "16px"
+                    , css "padding-right" "16px"
+                    ]
+                    [ text "Item Request" ]
+                , Toggles.radio Mdl
+                    [ 2 ]
+                    model.mdl
+                    [ Toggles.value False
+                    , Toggles.group "MyRadioGroup"
+                    , css "padding-left" "16px"
+                    , css "padding-right" "16px"
+                    ]
+                    [ text "Listen" ]
+                , Toggles.radio Mdl
+                    [ 3 ]
+                    model.mdl
+                    [ Toggles.value False
+                    , Toggles.group "MyRadioGroup"
+                    , css "padding-left" "16px"
+                    , css "padding-right" "16px"
+                    ]
+                    [ text "Information Offer" ]
+                , Toggles.radio Mdl
+                    [ 4 ]
+                    model.mdl
+                    [ Toggles.value False
+                    , Toggles.group "MyRadioGroup"
+                    , css "padding-left" "16px"
+                    , css "padding-right" "16px"
+                    ]
+                    [ text "Inquiry" ]
+                , Toggles.radio Mdl
+                    [ 5 ]
+                    model.mdl
+                    [ Toggles.value False
+                    , Toggles.group "MyRadioGroup"
+                    , css "padding-left" "16px"
+                    , css "padding-right" "16px"
+                    ]
+                    [ text "Inform" ]
+                , Toggles.radio Mdl
+                    [ 6 ]
+                    model.mdl
+                    [ Toggles.value False
+                    , Toggles.group "MyRadioGroup"
+                    , css "padding-left" "16px"
+                    , css "padding-right" "16px"
+                    ]
+                    [ text "Chatter" ]
+                , Options.styled p
+                    [ Typo.subhead
+                    , css "padding-top" "32px"
+                    ]
+                    [ text "Tone of Voice" ]
+                , Toggles.radio
+                    Mdl
+                    [ 0 ]
+                    model.mdl
+                    [ Toggles.value True
+                    , Toggles.group "MyRadioGroup"
+                    , css "padding-left" "16px"
+                    , css "padding-right" "16px"
+                    ]
+                    [ text "Friendly" ]
+                , Toggles.radio Mdl
+                    [ 1 ]
+                    model.mdl
+                    [ Toggles.value False
+                    , Toggles.group "MyRadioGroup"
+                    , css "padding-left" "16px"
+                    , css "padding-right" "16px"
+                    ]
+                    [ text "Aggressive" ]
+                ]
+          , gridBoxWithSizeAndContent 6
+                [ Options.styled p
+                    [ Typo.headline ]
+                    [ text "Construct Sentence" ]
+                , Options.styled
+                    p
                     [ Typo.subhead
                     , css "padding-top" "16px"
                     ]
@@ -246,26 +311,6 @@ viewBody model =
                     ]
                     [ text "Select Different Item"
                     ]
-                , Options.styled p
-                    [ Typo.subhead
-                    , css "padding-top" "16px"
-                    ]
-                    [ text "Tone of Voice" ]
-                , Toggles.radio
-                    Mdl
-                    [ 0 ]
-                    model.mdl
-                    [ Toggles.value True
-                    , Toggles.group "MyRadioGroup"
-                    ]
-                    [ text "Friendly" ]
-                , Toggles.radio Mdl
-                    [ 1 ]
-                    model.mdl
-                    [ Toggles.value False
-                    , Toggles.group "MyRadioGroup"
-                    ]
-                    [ text "Aggressive" ]
                 ]
           ]
             |> grid []

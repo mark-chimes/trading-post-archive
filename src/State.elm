@@ -1,7 +1,8 @@
-port module State exposing (init, update, subscriptions)
+port module State exposing (init, update)
 
 import Types exposing (..)
 import Material
+import Material.Layout as Layout
 
 
 -- MODEL
@@ -12,10 +13,10 @@ init =
     let
         model =
             { -- Boilerplate: Always use this initial Mdl model store.
-              mdl = Material.model
+              mdl = Layout.setTabsWidth 100 Material.model
             }
     in
-        ( model, Cmd.none )
+        ( model, Layout.sub0 Mdl )
 
 
 
@@ -35,8 +36,3 @@ update msg model =
 
 
 -- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
