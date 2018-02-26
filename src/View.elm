@@ -76,19 +76,16 @@ cellBackColor =
     Color.background (Color.color Color.Brown Color.S50)
 
 
-style : List (Style a)
-style =
-    [ css "text-sizing" "border-box"
-    , css "background-color" "#BDBDBD"
-    , css "padding-top" "16px"
-    , css "padding-bottom" "16px"
-    , css "color" "white"
+cellStyle : List (Style a)
+cellStyle =
+    [ css "padding-top" "16px"
+    , css "padding-bottom" "32px"
     ]
 
 
 basicCell : List (Style a) -> List (Html a) -> Grid.Cell a
 basicCell styling =
-    Grid.cell <| List.concat [ style, styling ]
+    Grid.cell <| List.concat [ cellStyle, styling ]
 
 
 gridBoxElevation : Mop a m
@@ -101,6 +98,36 @@ gridBox boxSize content =
     basicCell [ gridBoxElevation, Grid.size Grid.All boxSize, cellBackColor, Color.text Color.black ] content
 
 
+cellHeaderText : String -> Html msg
+cellHeaderText content =
+    Options.styled p
+        [ Typo.headline ]
+        [ text content ]
+
+
+cellSubheaderText : String -> Html msg
+cellSubheaderText content =
+    Options.styled p
+        [ Typo.subhead
+        , css "padding-top" "16px"
+        ]
+        [ text content ]
+
+
+cellBody1Text : String -> Html msg
+cellBody1Text content =
+    Options.styled p
+        [ Typo.body1 ]
+        [ text content ]
+
+
+cellBody2Text : String -> Html msg
+cellBody2Text content =
+    Options.styled p
+        [ Typo.body2 ]
+        [ text content ]
+
+
 radioButton : Model -> String -> Bool -> Int -> String -> Html Msg
 radioButton model groupName isToggled index name =
     Toggles.radio
@@ -111,6 +138,7 @@ radioButton model groupName isToggled index name =
         , Toggles.group groupName
         , css "padding-left" "16px"
         , css "padding-right" "16px"
+        , css "padding-bottom" "32px"
         ]
         [ text name ]
 
@@ -121,125 +149,82 @@ radioButtons model groupName names =
         ++ List.map2 (radioButton model groupName False) (List.range 1 <| List.length names - 1) (Maybe.withDefault [] <| List.tail names)
 
 
-overviewCell : Model -> List (Html Msg)
-overviewCell model =
-    [ Tabs.render Mdl
-        [ 0 ]
+tab : String -> Tabs.Label msg
+tab content =
+    Tabs.label
+        [ Options.center ]
+        [ Options.span [ css "width" "4px" ] []
+        , text content
+        ]
+
+
+tabs : Model -> Int -> List String -> Html Msg
+tabs model index strings =
+    Tabs.render Mdl
+        [ index ]
         model.mdl
         [ Tabs.ripple
+        , css "padding-bottom" "16px"
+        ]
+        (List.map tab strings)
+        []
 
-        -- , Tabs.activeTab model.tab
-        ]
-        [ Tabs.label
-            [ Options.center ]
-            [ Options.span [ css "width" "4px" ] []
-            , text "Overview"
-            ]
-        , Tabs.label
-            [ Options.center ]
-            [ Options.span [ css "width" "4px" ] []
-            , text "Appearance"
-            ]
-        ]
-        [{--
-                 case model.tab of
-                    0 ->
-                        aboutTab
 
-                    _ ->
-                        exampleTab
-                        --}
+textField : Model -> Int -> String -> Html Msg
+textField model index label =
+    Textfield.render Mdl
+        [ index ]
+        model.mdl
+        [ Textfield.label label
+        , Textfield.textarea
         ]
-    , Options.styled p
-        [ Typo.subhead
-        , css "padding-top" "12px"
-        ]
-        [ text "Joseph McFinkelstein the Brave" ]
-    , Options.styled p
-        [ Typo.body2 ]
-        [ text "That guy who is looking for the magic sword" ]
-    , Button.render Mdl
-        [ 0 ]
+        []
+
+
+button : Model -> Int -> String -> Html Msg
+button model index label =
+    Button.render Mdl
+        [ index ]
         model.mdl
         [ Button.raised
         ]
-        [ text "Modify Description"
+        [ text label
         ]
+
+
+overviewCell : Model -> List (Html Msg)
+overviewCell model =
+    [ tabs model 0 [ "Overview", "Appearance" ]
+    , cellSubheaderText "Joseph McFinkelstein the Brave"
+    , cellBody2Text "That guy who is looking for the magic sword"
+    , button model 0 "Modify Description"
     ]
 
 
 notesCell : Model -> List (Html Msg)
 notesCell model =
-    [ Tabs.render Mdl
-        [ 1 ]
-        model.mdl
-        [ Tabs.ripple
-
-        -- , Tabs.activeTab model.tab
+    [ tabs model
+        1
+        [ "Notes"
+        , "Log"
+        , "Trade"
         ]
-        [ Tabs.label
-            [ Options.center ]
-            [ Options.span [ css "width" "4px" ] []
-            , text "Notes"
-            ]
-        , Tabs.label
-            [ Options.center ]
-            [ Options.span [ css "width" "4px" ] []
-            , text "Log"
-            ]
-        , Tabs.label
-            [ Options.center ]
-            [ Options.span [ css "width" "4px" ] []
-            , text "Trade"
-            ]
-        ]
-        [{--
-                 case model.tab of
-                    0 ->
-                        aboutTab
-
-                    _ ->
-                        exampleTab
-                        --}
-        ]
-    , Textfield.render Mdl
-        [ 12 ]
-        model.mdl
-        [ Textfield.label "Notes"
-        , Textfield.textarea
-        ]
-        []
+    , textField model 12 "Notes"
     ]
 
 
 previewCell : Model -> List (Html Msg)
 previewCell model =
-    [ Options.styled p
-        [ Typo.headline ]
-        [ text "Preview and Speak" ]
-    , Options.styled p
-        [ Typo.body1 ]
-        [ text "I have a wonderful item for you! The Sword of Notre Dame!" ]
-    , Button.render Mdl
-        [ 0 ]
-        model.mdl
-        [ Button.raised
-        ]
-        [ text "Speak"
-        ]
+    [ cellHeaderText "Preview and Speak"
+    , cellBody1Text "I have a wonderful item for you! The Sword of Notre Dame!"
+    , button model 0 "Speak"
     ]
 
 
 actionCell : Model -> List (Html Msg)
 actionCell model =
-    ([ Options.styled p
-        [ Typo.headline ]
-        [ text "Action" ]
-     , Options.styled p
-        [ Typo.subhead
-        , css "padding-top" "16px"
-        ]
-        [ text "Type of Speech" ]
+    ([ cellHeaderText "Action"
+     , cellSubheaderText "Type of Speech"
      ]
         ++ radioButtons model
             "groupName"
@@ -251,33 +236,14 @@ actionCell model =
             , "Inform"
             , "Chatter"
             ]
-        ++ [ Options.styled p
-                [ Typo.subhead
-                , css "padding-top" "32px"
-                ]
-                [ text "Tone of Voice" ]
-           ]
+        ++ [ cellSubheaderText "Tone of Voice" ]
         ++ radioButtons model "group2Name" [ "Friendly", "Aggressive" ]
     )
 
 
 constructCell : Model -> List (Html Msg)
 constructCell model =
-    [ Options.styled p
-        [ Typo.headline ]
-        [ text "Construct Sentence" ]
-    , Options.styled
-        p
-        [ Typo.subhead
-        , css "padding-top" "16px"
-        ]
-        [ text "Offering: Sword of Notre Dame" ]
-    , Button.render Mdl
-        [ 0 ]
-        model.mdl
-        [ Button.raised
-        , css "padding-bottom" "16px"
-        ]
-        [ text "Select Different Item"
-        ]
+    [ cellHeaderText "Construct Sentence"
+    , cellSubheaderText "Offering: Sword of Notre Dame"
+    , button model 0 "Select Different Item"
     ]
