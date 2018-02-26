@@ -115,97 +115,37 @@ viewBody : Model -> Html Msg
 viewBody model =
     div
         []
-        [ [ viewGridBox1 model
-          , viewGridBox2 model
-          , gridBoxWithSizeAndContent 4
-                [ Options.styled p
-                    [ Typo.headline ]
-                    [ text "Preview and Speak" ]
-                , Options.styled p
-                    [ Typo.body1 ]
-                    [ text "I have a wonderful item for you! The Sword of Notre Dame!" ]
-                , Button.render Mdl
-                    [ 0 ]
-                    model.mdl
-                    [ Button.raised
-                    ]
-                    [ text "Speak"
-                    ]
-                ]
-          , gridBoxWithSizeAndContent 6
-                ([ Options.styled p
-                    [ Typo.headline ]
-                    [ text "Action" ]
-                 , Options.styled p
-                    [ Typo.subhead
-                    , css "padding-top" "16px"
-                    ]
-                    [ text "Type of Speech" ]
-                 ]
-                    ++ radioButtons model
-                        "groupName"
-                        [ "Item Offer"
-                        , "Item Request"
-                        , "Listen"
-                        , "Information Offer"
-                        , "Inquiry"
-                        , "Inform"
-                        , "Chatter"
-                        ]
-                    ++ [ Options.styled p
-                            [ Typo.subhead
-                            , css "padding-top" "32px"
-                            ]
-                            [ text "Tone of Voice" ]
-                       ]
-                    ++ radioButtons model "group2Name" [ "Friendly", "Aggressive" ]
-                )
-          , gridBoxWithSizeAndContent 6
-                [ Options.styled p
-                    [ Typo.headline ]
-                    [ text "Construct Sentence" ]
-                , Options.styled
-                    p
-                    [ Typo.subhead
-                    , css "padding-top" "16px"
-                    ]
-                    [ text "Offering: Sword of Notre Dame" ]
-                , Button.render Mdl
-                    [ 0 ]
-                    model.mdl
-                    [ Button.raised
-                    , css "padding-bottom" "16px"
-                    ]
-                    [ text "Select Different Item"
-                    ]
-                ]
+        [ [ gridBoxWithSizeAndContent 4 (gridBoxContent1 model)
+          , gridBoxWithSizeAndContent 4 (gridBoxContent2 model)
+          , gridBoxWithSizeAndContent 4 (gridBoxContent3 model)
+          , gridBoxWithSizeAndContent 6 (gridBoxContent4 model)
+          , gridBoxWithSizeAndContent 6 (gridBoxContent5 model)
           ]
             |> grid []
         ]
 
 
-viewGridBox1 : Model -> Cell Msg
-viewGridBox1 model =
-    gridBoxWithSizeAndContent 4
-        [ Tabs.render Mdl
-            [ 0 ]
-            model.mdl
-            [ Tabs.ripple
+gridBoxContent1 : Model -> List (Html Msg)
+gridBoxContent1 model =
+    [ Tabs.render Mdl
+        [ 0 ]
+        model.mdl
+        [ Tabs.ripple
 
-            -- , Tabs.activeTab model.tab
+        -- , Tabs.activeTab model.tab
+        ]
+        [ Tabs.label
+            [ Options.center ]
+            [ Options.span [ css "width" "4px" ] []
+            , text "Overview"
             ]
-            [ Tabs.label
-                [ Options.center ]
-                [ Options.span [ css "width" "4px" ] []
-                , text "Overview"
-                ]
-            , Tabs.label
-                [ Options.center ]
-                [ Options.span [ css "width" "4px" ] []
-                , text "Appearance"
-                ]
+        , Tabs.label
+            [ Options.center ]
+            [ Options.span [ css "width" "4px" ] []
+            , text "Appearance"
             ]
-            [{--
+        ]
+        [{--
                  case model.tab of
                     0 ->
                         aboutTab
@@ -213,52 +153,51 @@ viewGridBox1 model =
                     _ ->
                         exampleTab
                         --}
+        ]
+    , Options.styled p
+        [ Typo.subhead
+        , css "padding-top" "12px"
+        ]
+        [ text "Joseph McFinkelstein the Brave" ]
+    , Options.styled p
+        [ Typo.body2 ]
+        [ text "That guy who is looking for the magic sword" ]
+    , Button.render Mdl
+        [ 0 ]
+        model.mdl
+        [ Button.raised
+        ]
+        [ text "Modify Description"
+        ]
+    ]
+
+
+gridBoxContent2 : Model -> List (Html Msg)
+gridBoxContent2 model =
+    [ Tabs.render Mdl
+        [ 1 ]
+        model.mdl
+        [ Tabs.ripple
+
+        -- , Tabs.activeTab model.tab
+        ]
+        [ Tabs.label
+            [ Options.center ]
+            [ Options.span [ css "width" "4px" ] []
+            , text "Notes"
             ]
-        , Options.styled p
-            [ Typo.subhead
-            , css "padding-top" "12px"
+        , Tabs.label
+            [ Options.center ]
+            [ Options.span [ css "width" "4px" ] []
+            , text "Log"
             ]
-            [ text "Joseph McFinkelstein the Brave" ]
-        , Options.styled p
-            [ Typo.body2 ]
-            [ text "That guy who is looking for the magic sword" ]
-        , Button.render Mdl
-            [ 0 ]
-            model.mdl
-            [ Button.raised
-            ]
-            [ text "Modify Description"
+        , Tabs.label
+            [ Options.center ]
+            [ Options.span [ css "width" "4px" ] []
+            , text "Trade"
             ]
         ]
-
-
-viewGridBox2 : Model -> Cell Msg
-viewGridBox2 model =
-    gridBoxWithSizeAndContent 4
-        [ Tabs.render Mdl
-            [ 1 ]
-            model.mdl
-            [ Tabs.ripple
-
-            -- , Tabs.activeTab model.tab
-            ]
-            [ Tabs.label
-                [ Options.center ]
-                [ Options.span [ css "width" "4px" ] []
-                , text "Notes"
-                ]
-            , Tabs.label
-                [ Options.center ]
-                [ Options.span [ css "width" "4px" ] []
-                , text "Log"
-                ]
-            , Tabs.label
-                [ Options.center ]
-                [ Options.span [ css "width" "4px" ] []
-                , text "Trade"
-                ]
-            ]
-            [{--
+        [{--
                  case model.tab of
                     0 ->
                         aboutTab
@@ -266,12 +205,83 @@ viewGridBox2 model =
                     _ ->
                         exampleTab
                         --}
-            ]
-        , Textfield.render Mdl
-            [ 12 ]
-            model.mdl
-            [ Textfield.label "Notes"
-            , Textfield.textarea
-            ]
-            []
         ]
+    , Textfield.render Mdl
+        [ 12 ]
+        model.mdl
+        [ Textfield.label "Notes"
+        , Textfield.textarea
+        ]
+        []
+    ]
+
+
+gridBoxContent3 : Model -> List (Html Msg)
+gridBoxContent3 model =
+    [ Options.styled p
+        [ Typo.headline ]
+        [ text "Preview and Speak" ]
+    , Options.styled p
+        [ Typo.body1 ]
+        [ text "I have a wonderful item for you! The Sword of Notre Dame!" ]
+    , Button.render Mdl
+        [ 0 ]
+        model.mdl
+        [ Button.raised
+        ]
+        [ text "Speak"
+        ]
+    ]
+
+
+gridBoxContent4 : Model -> List (Html Msg)
+gridBoxContent4 model =
+    ([ Options.styled p
+        [ Typo.headline ]
+        [ text "Action" ]
+     , Options.styled p
+        [ Typo.subhead
+        , css "padding-top" "16px"
+        ]
+        [ text "Type of Speech" ]
+     ]
+        ++ radioButtons model
+            "groupName"
+            [ "Item Offer"
+            , "Item Request"
+            , "Listen"
+            , "Information Offer"
+            , "Inquiry"
+            , "Inform"
+            , "Chatter"
+            ]
+        ++ [ Options.styled p
+                [ Typo.subhead
+                , css "padding-top" "32px"
+                ]
+                [ text "Tone of Voice" ]
+           ]
+        ++ radioButtons model "group2Name" [ "Friendly", "Aggressive" ]
+    )
+
+
+gridBoxContent5 : Model -> List (Html Msg)
+gridBoxContent5 model =
+    [ Options.styled p
+        [ Typo.headline ]
+        [ text "Construct Sentence" ]
+    , Options.styled
+        p
+        [ Typo.subhead
+        , css "padding-top" "16px"
+        ]
+        [ text "Offering: Sword of Notre Dame" ]
+    , Button.render Mdl
+        [ 0 ]
+        model.mdl
+        [ Button.raised
+        , css "padding-bottom" "16px"
+        ]
+        [ text "Select Different Item"
+        ]
+    ]
