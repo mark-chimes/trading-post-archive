@@ -7,30 +7,12 @@ import Material.Scheme exposing (topWithScheme)
 import Material.Color as Color
 import Material.Typography as Typo
 import Material.Options as Options exposing (Style, css)
-import Material.Grid exposing (..)
+import Material.Grid as Grid
 import Material.Elevation as Elevation
 import Material.Button as Button
 import Material.Tabs as Tabs
 import Material.Toggles as Toggles
 import Material.Textfield as Textfield
-
-
-type alias Mop c m =
-    Options.Property c m
-
-
-headerColors : List (Mop c m)
-headerColors =
-    [ Color.background <| Color.color Color.Brown Color.S900
-    , Color.text <| Color.white
-    ]
-
-
-tabColors : List (Mop c m)
-tabColors =
-    [ Color.background (Color.color Color.Brown Color.S400)
-    , Color.text <| Color.white
-    ]
 
 
 view : Model -> Html Msg
@@ -61,6 +43,39 @@ viewHeader model =
         ]
 
 
+viewBody : Model -> Html Msg
+viewBody model =
+    div
+        []
+        [ [ gridBox 4 <| overviewCell model
+          , gridBox 4 <| notesCell model
+          , gridBox 4 <| previewCell model
+          , gridBox 6 <| actionCell model
+          , gridBox 6 <| constructCell model
+          ]
+            |> Grid.grid []
+        ]
+
+
+headerColors : List (Mop c m)
+headerColors =
+    [ Color.background <| Color.color Color.Brown Color.S900
+    , Color.text <| Color.white
+    ]
+
+
+tabColors : List (Mop c m)
+tabColors =
+    [ Color.background (Color.color Color.Brown Color.S400)
+    , Color.text <| Color.white
+    ]
+
+
+cellBackColor : Mop c m
+cellBackColor =
+    Color.background (Color.color Color.Brown Color.S50)
+
+
 style : List (Style a)
 style =
     [ css "text-sizing" "border-box"
@@ -71,14 +86,9 @@ style =
     ]
 
 
-basicCell : List (Style a) -> List (Html a) -> Cell a
+basicCell : List (Style a) -> List (Html a) -> Grid.Cell a
 basicCell styling =
-    cell <| List.concat [ style, styling ]
-
-
-color1 : Mop c m
-color1 =
-    Color.background (Color.color Color.Brown Color.S50)
+    Grid.cell <| List.concat [ style, styling ]
 
 
 gridBoxElevation : Mop a m
@@ -86,9 +96,9 @@ gridBoxElevation =
     Elevation.e6
 
 
-gridBoxWithSizeAndContent : Int -> List (Html m) -> Cell m
-gridBoxWithSizeAndContent boxSize content =
-    basicCell [ gridBoxElevation, size All boxSize, color1, Color.text Color.black ] content
+gridBox : Int -> List (Html m) -> Grid.Cell m
+gridBox boxSize content =
+    basicCell [ gridBoxElevation, Grid.size Grid.All boxSize, cellBackColor, Color.text Color.black ] content
 
 
 radioButton : Model -> String -> Bool -> Int -> String -> Html Msg
@@ -111,22 +121,8 @@ radioButtons model groupName names =
         ++ List.map2 (radioButton model groupName False) (List.range 1 <| List.length names - 1) (Maybe.withDefault [] <| List.tail names)
 
 
-viewBody : Model -> Html Msg
-viewBody model =
-    div
-        []
-        [ [ gridBoxWithSizeAndContent 4 (gridBoxContent1 model)
-          , gridBoxWithSizeAndContent 4 (gridBoxContent2 model)
-          , gridBoxWithSizeAndContent 4 (gridBoxContent3 model)
-          , gridBoxWithSizeAndContent 6 (gridBoxContent4 model)
-          , gridBoxWithSizeAndContent 6 (gridBoxContent5 model)
-          ]
-            |> grid []
-        ]
-
-
-gridBoxContent1 : Model -> List (Html Msg)
-gridBoxContent1 model =
+overviewCell : Model -> List (Html Msg)
+overviewCell model =
     [ Tabs.render Mdl
         [ 0 ]
         model.mdl
@@ -172,8 +168,8 @@ gridBoxContent1 model =
     ]
 
 
-gridBoxContent2 : Model -> List (Html Msg)
-gridBoxContent2 model =
+notesCell : Model -> List (Html Msg)
+notesCell model =
     [ Tabs.render Mdl
         [ 1 ]
         model.mdl
@@ -216,8 +212,8 @@ gridBoxContent2 model =
     ]
 
 
-gridBoxContent3 : Model -> List (Html Msg)
-gridBoxContent3 model =
+previewCell : Model -> List (Html Msg)
+previewCell model =
     [ Options.styled p
         [ Typo.headline ]
         [ text "Preview and Speak" ]
@@ -234,8 +230,8 @@ gridBoxContent3 model =
     ]
 
 
-gridBoxContent4 : Model -> List (Html Msg)
-gridBoxContent4 model =
+actionCell : Model -> List (Html Msg)
+actionCell model =
     ([ Options.styled p
         [ Typo.headline ]
         [ text "Action" ]
@@ -265,8 +261,8 @@ gridBoxContent4 model =
     )
 
 
-gridBoxContent5 : Model -> List (Html Msg)
-gridBoxContent5 model =
+constructCell : Model -> List (Html Msg)
+constructCell model =
     [ Options.styled p
         [ Typo.headline ]
         [ text "Construct Sentence" ]

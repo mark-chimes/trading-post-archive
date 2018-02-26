@@ -1,5 +1,6 @@
 module Types exposing (..)
 
+import Material.Options as Options
 import Material
 
 
@@ -17,3 +18,7 @@ type Msg
     = Noop
       -- Boilerplate: Mdl action handler.
     | Mdl (Material.Msg Msg)
+
+
+type alias Mop c m =
+    Options.Property c m
