@@ -80,6 +80,8 @@ cellStyle : List (Style a)
 cellStyle =
     [ css "padding-top" "16px"
     , css "padding-bottom" "32px"
+    , css "padding-left" "16px"
+    , css "padding-right" "16px"
     ]
 
 
@@ -158,12 +160,14 @@ tab content =
         ]
 
 
-tabs : Model -> Int -> List String -> Html Msg
-tabs model index strings =
+tabs : Model -> Int -> Int -> (Int -> Msg) -> List String -> Html Msg
+tabs model index activeTabIndex selectAction strings =
     Tabs.render Mdl
         [ index ]
         model.mdl
         [ Tabs.ripple
+        , Tabs.onSelectTab selectAction
+        , Tabs.activeTab activeTabIndex
         , css "padding-bottom" "16px"
         ]
         (List.map tab strings)
@@ -194,17 +198,35 @@ button model index label =
 
 overviewCell : Model -> List (Html Msg)
 overviewCell model =
-    [ tabs model 0 [ "Overview", "Appearance" ]
-    , cellSubheaderText "Joseph McFinkelstein the Brave"
+    [ tabs model 0 model.viewState.overviewTabIndex (SelectTab OverviewTabType) [ "Overview", "Appearance" ] ]
+        ++ (case model.viewState.overviewTabState of
+                OverviewTab ->
+                    overviewTab model
+
+                DescriptionTab ->
+                    appearanceTab model
+           )
+
+
+overviewTab : Model -> List (Html Msg)
+overviewTab model =
+    [ cellSubheaderText "Joseph McFinkelstein the Brave"
     , cellBody2Text "That guy who is looking for the magic sword"
     , button model 0 "Modify Description"
     ]
+
+
+appearanceTab : Model -> List (Html Msg)
+appearanceTab model =
+    [ cellBody2Text "A short, stout fellow with a long, golden beard matched by a magnificient moustache. He does not seem to care much for formality. " ]
 
 
 notesCell : Model -> List (Html Msg)
 notesCell model =
     [ tabs model
         1
+        model.viewState.notesTabIndex
+        (SelectTab NotesTabType)
         [ "Notes"
         , "Log"
         , "Trade"
