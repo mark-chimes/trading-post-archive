@@ -199,13 +199,17 @@ button model index label =
 overviewCell : Model -> List (Html Msg)
 overviewCell model =
     [ tabs model 0 model.viewState.overviewTabIndex (SelectTab OverviewTabType) [ "Overview", "Appearance" ] ]
-        ++ (case model.viewState.overviewTabState of
-                OverviewTab ->
-                    overviewTab model
+        ++ overviewTabState model.viewState.overviewTabState model
 
-                DescriptionTab ->
-                    appearanceTab model
-           )
+
+overviewTabState : OverviewTabState -> Model -> List (Html Msg)
+overviewTabState overviewTabState =
+    case overviewTabState of
+        OverviewTab ->
+            overviewTab
+
+        DescriptionTab ->
+            appearanceTab
 
 
 overviewTab : Model -> List (Html Msg)
@@ -231,8 +235,36 @@ notesCell model =
         , "Log"
         , "Trade"
         ]
-    , textField model 12 "Notes"
     ]
+        ++ notesTabState model.viewState.notesTabState model
+
+
+notesTabState : NotesTabState -> Model -> List (Html Msg)
+notesTabState notesTabState =
+    case notesTabState of
+        NotesTab ->
+            notesTab
+
+        LogTab ->
+            logTab
+
+        TradeTab ->
+            tradeTab
+
+
+notesTab : Model -> List (Html Msg)
+notesTab model =
+    [ textField model 12 "Notes" ]
+
+
+logTab : Model -> List (Html Msg)
+logTab model =
+    [ cellBody2Text "Log" ]
+
+
+tradeTab : Model -> List (Html Msg)
+tradeTab model =
+    [ cellBody2Text "Trade" ]
 
 
 previewCell : Model -> List (Html Msg)
