@@ -130,14 +130,20 @@ cellBody2Text content =
         [ text content ]
 
 
-radioButton : Model -> String -> Bool -> Int -> String -> Html Msg
-radioButton model groupName isToggled index name =
+radioButtons : Mdl -> ViewState -> String -> RadioType -> List String -> List (Html Msg)
+radioButtons mdl viewState groupName radioType names =
+    List.map2 (radioButton mdl viewState groupName radioType) (List.range 0 (List.length names)) names
+
+
+radioButton : Mdl -> ViewState -> String -> RadioType -> Int -> String -> Html Msg
+radioButton mdl viewState groupName radioType index name =
     Toggles.radio
         Mdl
         [ index ]
-        model.mdl
-        [ Toggles.value isToggled
+        mdl
+        [ Toggles.value <| isRadioActive viewState radioType index
         , Toggles.group groupName
+        , Options.onToggle (SelectRadio radioType index)
         , css "padding-left" "16px"
         , css "padding-right" "16px"
         , css "padding-bottom" "32px"
@@ -145,10 +151,14 @@ radioButton model groupName isToggled index name =
         [ text name ]
 
 
-radioButtons : Model -> String -> List String -> List (Html Msg)
-radioButtons model groupName names =
-    [ radioButton model groupName True 0 <| Maybe.withDefault "RADIO-BUTTON-ERROR" <| List.head names ]
-        ++ List.map2 (radioButton model groupName False) (List.range 1 <| List.length names - 1) (Maybe.withDefault [] <| List.tail names)
+isRadioActive : ViewState -> RadioType -> Int -> Bool
+isRadioActive viewState radioType index =
+    case radioType of
+        ActionRadioType ->
+            (viewState.actionRadioIndex == index)
+
+        ToneRadioType ->
+            (viewState.toneRadioIndex == index)
 
 
 tab : String -> Tabs.Label msg
@@ -216,7 +226,6 @@ overviewTab : Model -> List (Html Msg)
 overviewTab model =
     [ cellSubheaderText "Joseph McFinkelstein the Brave"
     , cellBody2Text "That guy who is looking for the magic sword"
-    , button model 0 "Modify Description"
     ]
 
 
@@ -280,8 +289,10 @@ actionCell model =
     ([ cellHeaderText "Action"
      , cellSubheaderText "Type of Speech"
      ]
-        ++ radioButtons model
-            "groupName"
+        ++ radioButtons model.mdl
+            model.viewState
+            "actionRadioButtons"
+            ActionRadioType
             [ "Item Offer"
             , "Item Request"
             , "Listen"
@@ -291,7 +302,11 @@ actionCell model =
             , "Chatter"
             ]
         ++ [ cellSubheaderText "Tone of Voice" ]
-        ++ radioButtons model "group2Name" [ "Friendly", "Aggressive" ]
+        ++ radioButtons model.mdl
+            model.viewState
+            "toneRadioButtons"
+            ToneRadioType
+            [ "Friendly", "Aggressive" ]
     )
 
 

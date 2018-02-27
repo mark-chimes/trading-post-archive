@@ -18,6 +18,10 @@ init =
                 , overviewTabIndex = 0
                 , notesTabState = NotesTab
                 , notesTabIndex = 0
+                , actionRadioState = ItemOffer
+                , actionRadioIndex = 0
+                , toneRadioState = Cheerful
+                , toneRadioIndex = 0
                 }
             }
     in
@@ -28,8 +32,8 @@ init =
 -- UPDATE
 
 
-updateOverviewTabIndex : Int -> OverviewTabState
-updateOverviewTabIndex tabIndex =
+updateOverviewTabState : Int -> OverviewTabState
+updateOverviewTabState tabIndex =
     case tabIndex of
         0 ->
             OverviewTab
@@ -38,12 +42,8 @@ updateOverviewTabIndex tabIndex =
             DescriptionTab
 
 
-
--- TODO Have error shown
-
-
-updateNotesTabIndex : Int -> NotesTabState
-updateNotesTabIndex tabIndex =
+updateNotesTabState : Int -> NotesTabState
+updateNotesTabState tabIndex =
     case tabIndex of
         0 ->
             NotesTab
@@ -55,18 +55,59 @@ updateNotesTabIndex tabIndex =
             TradeTab
 
 
+updateActionRadioState : Int -> ActionState
+updateActionRadioState tabIndex =
+    case tabIndex of
+        0 ->
+            ItemOffer
 
--- TODO Show error
+        1 ->
+            ItemRequest
+
+        2 ->
+            Listen
+
+        3 ->
+            InformationOffer
+
+        4 ->
+            Inquiry
+
+        5 ->
+            Inform
+
+        _ ->
+            Chatter
 
 
-updateTabState : ViewState -> TabType -> Int -> ViewState
-updateTabState viewState tabType tabIndex =
+updateToneRadioState : Int -> ToneState
+updateToneRadioState tabIndex =
+    case tabIndex of
+        0 ->
+            Cheerful
+
+        _ ->
+            Angry
+
+
+updateTabSelectionState : ViewState -> TabType -> Int -> ViewState
+updateTabSelectionState viewState tabType tabIndex =
     case tabType of
         OverviewTabType ->
-            { viewState | overviewTabState = updateOverviewTabIndex tabIndex, overviewTabIndex = tabIndex }
+            { viewState | overviewTabState = updateOverviewTabState tabIndex, overviewTabIndex = tabIndex }
 
         NotesTabType ->
-            { viewState | notesTabState = updateNotesTabIndex tabIndex, notesTabIndex = tabIndex }
+            { viewState | notesTabState = updateNotesTabState tabIndex, notesTabIndex = tabIndex }
+
+
+updateRadioSelectionState : ViewState -> RadioType -> Int -> ViewState
+updateRadioSelectionState viewState radioType tabIndex =
+    case radioType of
+        ActionRadioType ->
+            { viewState | actionRadioState = updateActionRadioState tabIndex, actionRadioIndex = tabIndex }
+
+        ToneRadioType ->
+            { viewState | toneRadioState = updateToneRadioState tabIndex, toneRadioIndex = tabIndex }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -80,7 +121,10 @@ update msg model =
             Material.update Mdl msg_ model
 
         SelectTab tabType tabIndex ->
-            ( { model | viewState = updateTabState model.viewState tabType tabIndex }, Cmd.none )
+            ( { model | viewState = updateTabSelectionState model.viewState tabType tabIndex }, Cmd.none )
+
+        SelectRadio radioType tabIndex ->
+            ( { model | viewState = updateRadioSelectionState model.viewState radioType tabIndex }, Cmd.none )
 
 
 

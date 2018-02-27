@@ -19,6 +19,10 @@ type alias ViewState =
     , overviewTabIndex : Int
     , notesTabState : NotesTabState
     , notesTabIndex : Int
+    , actionRadioState : ActionState
+    , actionRadioIndex : Int
+    , toneRadioState : ToneState
+    , toneRadioIndex : Int
     }
 
 
@@ -33,15 +37,36 @@ type NotesTabState
     | TradeTab
 
 
+type ActionState
+    = ItemOffer
+    | ItemRequest
+    | Listen
+    | InformationOffer
+    | Inquiry
+    | Inform
+    | Chatter
+
+
+type ToneState
+    = Cheerful
+    | Angry
+
+
 type Msg
     = Noop
     | Mdl (Material.Msg Msg)
     | SelectTab TabType Int
+    | SelectRadio RadioType Int
 
 
 type TabType
     = OverviewTabType
     | NotesTabType
+
+
+type RadioType
+    = ActionRadioType
+    | ToneRadioType
 
 
 type alias Mop c m =
