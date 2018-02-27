@@ -201,6 +201,7 @@ button model index label =
         [ index ]
         model.mdl
         [ Button.raised
+        , Button.ripple
         ]
         [ text label
         ]
@@ -280,7 +281,7 @@ previewCell : Model -> List (Html Msg)
 previewCell model =
     [ cellHeaderText "Preview and Speak"
     , cellBody1Text "I have a wonderful item for you! The Sword of Notre Dame!"
-    , button model 0 "Speak"
+    , button model 1 "Speak"
     ]
 
 
@@ -314,5 +315,5 @@ constructCell : Model -> List (Html Msg)
 constructCell model =
     [ cellHeaderText "Construct Sentence"
     , cellSubheaderText "Offering: Sword of Notre Dame"
-    , button model 0 "Select Different Item"
+    , button model 2 "Select Different Item"
     ]
