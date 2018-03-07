@@ -2,7 +2,7 @@ module View exposing (view)
 
 import Types exposing (..)
 import Html exposing (..)
-import Html.Attributes as Attributes exposing (style)
+import Html.Attributes as Attributes exposing (style, type_)
 import Material.Layout as Layout
 import Material.Scheme exposing (topWithScheme)
 import Material.Color as Color
@@ -53,7 +53,7 @@ viewBody model =
           , gridBox 4 <| notesCell model
           , gridBox 4 <| previewCell model
           , gridBox 6 <| actionCell model
-          , gridBox 6 <| constructCell model
+          , gridBox 6 <| constructionCell model
           ]
             |> Grid.grid []
         ]
@@ -165,6 +165,9 @@ isRadioActive viewState radioType index =
         ItemRadioType ->
             (viewState.itemRadioIndex == index)
 
+        RequestedItemRadioType ->
+            (viewState.requestedItemRadioIndex == index)
+
 
 tab : String -> Tabs.Label msg
 tab content =
@@ -189,13 +192,14 @@ tabs model index activeTabIndex selectAction strings =
         []
 
 
-textField : Model -> Int -> String -> Html Msg
-textField model index label =
+textField : Model -> Int -> String -> (String -> Msg) -> Html Msg
+textField model index label onChangeTextAction =
     Textfield.render Mdl
         [ index ]
         model.mdl
         [ Textfield.label label
         , Textfield.textarea
+        , Options.onInput onChangeTextAction
         ]
         []
 
@@ -269,7 +273,7 @@ notesTabState notesTabState =
 
 notesTab : Model -> List (Html Msg)
 notesTab model =
-    [ textField model 12 "Notes" ]
+    [ textField model 12 "Notes" (\s -> Noop) ]
 
 
 logTab : Model -> List (Html Msg)
@@ -285,9 +289,35 @@ tradeTab model =
 previewCell : Model -> List (Html Msg)
 previewCell model =
     [ cellHeaderText "Preview and Speak"
-    , cellBody1Text ("I have just the item for you; " ++ model.gameState.selectedItem.inSentence ++ "!")
+    , cellBody1Text <|
+        (case model.gameState.actionRadioState of
+            ItemOffer ->
+                itemOfferPreview
+
+            ItemRequest ->
+                itemRequestPreview
+
+            _ ->
+                unimplementedPreview
+        )
+            model
     , button model 1 "Speak"
     ]
+
+
+itemOfferPreview : Model -> String
+itemOfferPreview model =
+    ("I know just what you need; " ++ model.gameState.selectedItem.inSentence ++ "!")
+
+
+itemRequestPreview : Model -> String
+itemRequestPreview model =
+    ("Do you perhaps have " ++ model.gameState.requestedItem.inSentence ++ " for sale?")
+
+
+unimplementedPreview : Model -> String
+unimplementedPreview model =
+    ("Action not implemented")
 
 
 actionCell : Model -> List (Html Msg)
@@ -316,10 +346,25 @@ actionCell model =
     )
 
 
-constructCell : Model -> List (Html Msg)
-constructCell model =
-    [ cellHeaderText "Construct Sentence"
-    , cellSubheaderText ("Select Item to Offer")
+constructionCell : Model -> List (Html Msg)
+constructionCell model =
+    [ cellHeaderText "Construct Sentence" ]
+        ++ (case model.gameState.actionRadioState of
+                ItemOffer ->
+                    offerItemBlock
+
+                ItemRequest ->
+                    requestItemBlock
+
+                _ ->
+                    unimplementedBlock
+           )
+            model
+
+
+offerItemBlock : Model -> List (Html Msg)
+offerItemBlock model =
+    [ cellSubheaderText ("Item to Offer")
     , renderList <|
         radioButtons model.mdl
             model.viewState
@@ -327,11 +372,35 @@ constructCell model =
             ItemRadioType
         <|
             List.map .name (Array.toList model.gameState.itemsInShop)
+    , button model 2 "View Selected Item Details"
     ]
+
+
+requestItemBlock : Model -> List (Html Msg)
+requestItemBlock model =
+    [ cellSubheaderText ("Item to Request")
+    , renderList <|
+        radioButtons model.mdl
+            model.viewState
+            "requestedItemRadioButtons"
+            RequestedItemRadioType
+        <|
+            List.map .name (Array.toList model.gameState.requestableItems)
+    , button model 3 "View Selected Item Details"
+    ]
+
+
+
+--    , div [] [ input [ Attributes.placeholder "Price", Attributes.type_ "number" ] [] ]
+
+
+unimplementedBlock : Model -> List (Html Msg)
+unimplementedBlock model =
+    [ cellSubheaderText ("Action not yet implemented") ]
 
 
 renderList : List (Html msg) -> Html msg
 renderList lst =
     lst
         |> List.map (\l -> li [] [ l ])
-        |> ul [ Attributes.style [ ( "list-style", "none" ), ( "height", "400px" ), ( "overflow-y", "scroll" ) ] ]
+        |> ul [ Attributes.style [ ( "list-style", "none" ), ( "height", "200px" ), ( "overflow-y", "scroll" ) ] ]

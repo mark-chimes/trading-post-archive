@@ -22,6 +22,7 @@ init =
                 , actionRadioIndex = 0
                 , toneRadioIndex = 0
                 , itemRadioIndex = 0
+                , requestedItemRadioIndex = 0
                 }
             , gameState =
                 { itemsInShop = Array.fromList [ dagger, trailMix ]
@@ -29,6 +30,8 @@ init =
                 , actionRadioState = ItemOffer
                 , toneRadioState = Cheerful
                 , selectedItem = dagger
+                , requestableItems = Array.fromList [ trailMix, elysiumSword ]
+                , requestedItem = trailMix
                 }
             }
     in
@@ -43,6 +46,11 @@ nullItem =
 dagger : BuyableItem
 dagger =
     { name = "Dagger", inSentence = "a dagger", price = 10 }
+
+
+elysiumSword : BuyableItem
+elysiumSword =
+    { name = "Sword of Elysium", inSentence = "the Sword of Elysium", price = 100 }
 
 
 trailMix : BuyableItem
@@ -134,6 +142,9 @@ updateRadioSelectionViewState viewState radioType index =
         ItemRadioType ->
             { viewState | itemRadioIndex = index }
 
+        RequestedItemRadioType ->
+            { viewState | requestedItemRadioIndex = index }
+
 
 updateRadioSelectionGameState : GameState -> RadioType -> Int -> GameState
 updateRadioSelectionGameState gameState radioType index =
@@ -146,6 +157,9 @@ updateRadioSelectionGameState gameState radioType index =
 
         ItemRadioType ->
             { gameState | selectedItem = Maybe.withDefault nullItem (Array.get index gameState.itemsInShop) }
+
+        RequestedItemRadioType ->
+            { gameState | requestedItem = Maybe.withDefault nullItem (Array.get index gameState.requestableItems) }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -161,10 +175,10 @@ update msg model =
         SelectTab tabType tabIndex ->
             ( { model | viewState = updateTabSelectionState model.viewState tabType tabIndex }, Cmd.none )
 
-        SelectRadio radioType tabIndex ->
+        SelectRadio radioType index ->
             ( { model
-                | gameState = updateRadioSelectionGameState model.gameState radioType tabIndex
-                , viewState = updateRadioSelectionViewState model.viewState radioType tabIndex
+                | gameState = updateRadioSelectionGameState model.gameState radioType index
+                , viewState = updateRadioSelectionViewState model.viewState radioType index
               }
             , Cmd.none
             )

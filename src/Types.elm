@@ -24,6 +24,7 @@ type alias ViewState =
     , actionRadioIndex : Int
     , toneRadioIndex : Int
     , itemRadioIndex : Int
+    , requestedItemRadioIndex : Int
     }
 
 
@@ -33,6 +34,8 @@ type alias GameState =
     , actionRadioState : ActionState
     , toneRadioState : ToneState
     , selectedItem : BuyableItem
+    , requestableItems : Array.Array BuyableItem
+    , requestedItem : BuyableItem
     }
 
 
@@ -78,6 +81,7 @@ type RadioType
     = ActionRadioType
     | ToneRadioType
     | ItemRadioType
+    | RequestedItemRadioType
 
 
 type alias Mop c m =
