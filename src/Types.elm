@@ -25,6 +25,7 @@ type alias ViewState =
     , toneRadioIndex : Int
     , itemRadioIndex : Int
     , requestedItemRadioIndex : Int
+    , informationOfferRadioIndex : Int
     }
 
 
@@ -36,6 +37,8 @@ type alias GameState =
     , selectedItem : BuyableItem
     , requestableItems : Array.Array BuyableItem
     , requestedItem : BuyableItem
+    , informationTopics : Array.Array InformationTopic
+    , currentlyOfferedTopic : InformationTopic
     }
 
 
@@ -82,6 +85,7 @@ type RadioType
     | ToneRadioType
     | ItemRadioType
     | RequestedItemRadioType
+    | InformationOfferRadioType
 
 
 type alias Mop c m =
@@ -93,4 +97,8 @@ type alias StringAndCommand =
 
 
 type alias BuyableItem =
+    { name : String, inSentence : String, price : Int }
+
+
+type alias InformationTopic =
     { name : String, inSentence : String, price : Int }

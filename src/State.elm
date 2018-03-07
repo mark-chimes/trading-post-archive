@@ -23,6 +23,7 @@ init =
                 , toneRadioIndex = 0
                 , itemRadioIndex = 0
                 , requestedItemRadioIndex = 0
+                , informationOfferRadioIndex = 0
                 }
             , gameState =
                 { itemsInShop = Array.fromList [ dagger, trailMix ]
@@ -32,10 +33,32 @@ init =
                 , selectedItem = dagger
                 , requestableItems = Array.fromList [ trailMix, elysiumSword ]
                 , requestedItem = trailMix
+                , informationTopics = Array.fromList [ georgeTopic, amuletTopic, goblinsTopic ]
+                , currentlyOfferedTopic = georgeTopic
                 }
             }
     in
         ( model, Layout.sub0 Mdl )
+
+
+nullTopic : InformationTopic
+nullTopic =
+    { name = "No topic selected", inSentence = "absolutely nothing at all", price = 0 }
+
+
+georgeTopic : InformationTopic
+georgeTopic =
+    { name = "George the dragon slayer", inSentence = "George, the fabled dragon slayer", price = 10 }
+
+
+amuletTopic : InformationTopic
+amuletTopic =
+    { name = "Amulet of Yendor", inSentence = "the mystical Amulet of Yendor", price = 10 }
+
+
+goblinsTopic : InformationTopic
+goblinsTopic =
+    { name = "Goblin Raids", inSentence = "those goblins which have been raiding the nearby villages", price = 10 }
 
 
 nullItem : BuyableItem
@@ -145,6 +168,9 @@ updateRadioSelectionViewState viewState radioType index =
         RequestedItemRadioType ->
             { viewState | requestedItemRadioIndex = index }
 
+        InformationOfferRadioType ->
+            { viewState | informationOfferRadioIndex = index }
+
 
 updateRadioSelectionGameState : GameState -> RadioType -> Int -> GameState
 updateRadioSelectionGameState gameState radioType index =
@@ -160,6 +186,9 @@ updateRadioSelectionGameState gameState radioType index =
 
         RequestedItemRadioType ->
             { gameState | requestedItem = Maybe.withDefault nullItem (Array.get index gameState.requestableItems) }
+
+        InformationOfferRadioType ->
+            { gameState | currentlyOfferedTopic = Maybe.withDefault nullTopic (Array.get index gameState.informationTopics) }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

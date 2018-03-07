@@ -168,6 +168,9 @@ isRadioActive viewState radioType index =
         RequestedItemRadioType ->
             (viewState.requestedItemRadioIndex == index)
 
+        InformationOfferRadioType ->
+            (viewState.informationOfferRadioIndex == index)
+
 
 tab : String -> Tabs.Label msg
 tab content =
@@ -297,6 +300,12 @@ previewCell model =
             ItemRequest ->
                 itemRequestPreview
 
+            Listen ->
+                listenPreview
+
+            InformationOffer ->
+                informationOfferPreview
+
             _ ->
                 unimplementedPreview
         )
@@ -307,12 +316,45 @@ previewCell model =
 
 itemOfferPreview : Model -> String
 itemOfferPreview model =
-    ("I know just what you need; " ++ model.gameState.selectedItem.inSentence ++ "!")
+    case model.gameState.toneRadioState of
+        Cheerful ->
+            ("I know just what you need; " ++ model.gameState.selectedItem.inSentence ++ "!")
+
+        Angry ->
+            ("Let me tell you something, you incontinent excuse for a derrier-based lard receptacle;\n             you are going to purchase " ++ model.gameState.selectedItem.inSentence ++ " and you'll like it!")
 
 
 itemRequestPreview : Model -> String
 itemRequestPreview model =
-    ("Do you perhaps have " ++ model.gameState.requestedItem.inSentence ++ " for sale?")
+    case model.gameState.toneRadioState of
+        Cheerful ->
+            ("Do you perhaps have " ++ model.gameState.requestedItem.inSentence ++ " for sale?")
+
+        Angry ->
+            ("Listen here, you squalid bag of insalubrious detritus, if you have "
+                ++ model.gameState.requestedItem.inSentence
+                ++ " you'd better sell it to me!"
+            )
+
+
+listenPreview : Model -> String
+listenPreview model =
+    case model.gameState.toneRadioState of
+        Cheerful ->
+            ("Please, continue...")
+
+        Angry ->
+            ("You feckless, miasmic, gastro-intestinal emission! If you have something to say, then say it to my face!")
+
+
+informationOfferPreview : Model -> String
+informationOfferPreview model =
+    case model.gameState.toneRadioState of
+        Cheerful ->
+            ("There's something very interesting about " ++ model.gameState.currentlyOfferedTopic.inSentence ++ " that I think you should know...")
+
+        Angry ->
+            ("You glassy-eyed, addlepated ignoramus! If only you knew what I know about " ++ model.gameState.currentlyOfferedTopic.inSentence ++ "!")
 
 
 unimplementedPreview : Model -> String
@@ -356,6 +398,12 @@ constructionCell model =
                 ItemRequest ->
                     requestItemBlock
 
+                Listen ->
+                    listenBlock
+
+                InformationOffer ->
+                    informationOfferBlock
+
                 _ ->
                     unimplementedBlock
            )
@@ -390,8 +438,27 @@ requestItemBlock model =
     ]
 
 
+informationOfferBlock : Model -> List (Html Msg)
+informationOfferBlock model =
+    [ cellSubheaderText ("Information to offer")
+    , renderList <|
+        radioButtons model.mdl
+            model.viewState
+            "informationOfferRadioButtons"
+            InformationOfferRadioType
+        <|
+            List.map .name (Array.toList model.gameState.informationTopics)
+    , button model 3 "View Selected Item Details"
+    ]
+
+
 
 --    , div [] [ input [ Attributes.placeholder "Price", Attributes.type_ "number" ] [] ]
+
+
+listenBlock : Model -> List (Html Msg)
+listenBlock model =
+    [ cellSubheaderText ("Listening (no options)") ]
 
 
 unimplementedBlock : Model -> List (Html Msg)
