@@ -14,6 +14,7 @@ import Material.Button as Button
 import Material.Tabs as Tabs
 import Material.Toggles as Toggles
 import Material.Textfield as Textfield
+import Array.Hamt as Array
 
 
 view : Model -> Html Msg
@@ -325,7 +326,7 @@ constructCell model =
             "itemRadioButtons"
             ItemRadioType
         <|
-            List.map .name model.gameState.itemsInShop
+            List.map .name (Array.toList model.gameState.itemsInShop)
     ]
 
 

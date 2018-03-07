@@ -2,6 +2,7 @@ module Types exposing (..)
 
 import Material.Options as Options
 import Material
+import Array.Hamt as Array
 
 
 type alias Mdl =
@@ -20,9 +21,7 @@ type alias ViewState =
     , overviewTabIndex : Int
     , notesTabState : NotesTabState
     , notesTabIndex : Int
-    , actionRadioState : ActionState
     , actionRadioIndex : Int
-    , toneRadioState : ToneState
     , toneRadioIndex : Int
     , itemRadioIndex : Int
     }
@@ -30,7 +29,9 @@ type alias ViewState =
 
 type alias GameState =
     { gold : Int
-    , itemsInShop : List BuyableItem
+    , itemsInShop : Array.Array BuyableItem
+    , actionRadioState : ActionState
+    , toneRadioState : ToneState
     , selectedItem : BuyableItem
     }
 

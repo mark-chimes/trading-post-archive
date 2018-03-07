@@ -3,6 +3,7 @@ port module State exposing (init, update)
 import Types exposing (..)
 import Material
 import Material.Layout as Layout
+import Array.Hamt as Array
 
 
 -- MODEL
@@ -18,20 +19,25 @@ init =
                 , overviewTabIndex = 0
                 , notesTabState = NotesTab
                 , notesTabIndex = 0
-                , actionRadioState = ItemOffer
                 , actionRadioIndex = 0
-                , toneRadioState = Cheerful
                 , toneRadioIndex = 0
                 , itemRadioIndex = 0
                 }
             , gameState =
-                { itemsInShop = [ dagger, trailMix ]
+                { itemsInShop = Array.fromList [ dagger, trailMix ]
                 , gold = 50
+                , actionRadioState = ItemOffer
+                , toneRadioState = Cheerful
                 , selectedItem = dagger
                 }
             }
     in
         ( model, Layout.sub0 Mdl )
+
+
+nullItem : BuyableItem
+nullItem =
+    { name = "No item selected", inSentence = "absolutely nothing at all", price = 0 }
 
 
 dagger : BuyableItem
@@ -72,8 +78,8 @@ updateNotesTabState tabIndex =
 
 
 updateActionRadioState : Int -> ActionState
-updateActionRadioState tabIndex =
-    case tabIndex of
+updateActionRadioState index =
+    case index of
         0 ->
             ItemOffer
 
@@ -97,8 +103,8 @@ updateActionRadioState tabIndex =
 
 
 updateToneRadioState : Int -> ToneState
-updateToneRadioState tabIndex =
-    case tabIndex of
+updateToneRadioState index =
+    case index of
         0 ->
             Cheerful
 
@@ -116,17 +122,30 @@ updateTabSelectionState viewState tabType tabIndex =
             { viewState | notesTabState = updateNotesTabState tabIndex, notesTabIndex = tabIndex }
 
 
-updateRadioSelectionState : ViewState -> RadioType -> Int -> ViewState
-updateRadioSelectionState viewState radioType tabIndex =
+updateRadioSelectionViewState : ViewState -> RadioType -> Int -> ViewState
+updateRadioSelectionViewState viewState radioType index =
     case radioType of
         ActionRadioType ->
-            { viewState | actionRadioState = updateActionRadioState tabIndex, actionRadioIndex = tabIndex }
+            { viewState | actionRadioIndex = index }
 
         ToneRadioType ->
-            { viewState | toneRadioState = updateToneRadioState tabIndex, toneRadioIndex = tabIndex }
+            { viewState | toneRadioIndex = index }
 
         ItemRadioType ->
-            { viewState | itemRadioIndex = tabIndex }
+            { viewState | itemRadioIndex = index }
+
+
+updateRadioSelectionGameState : GameState -> RadioType -> Int -> GameState
+updateRadioSelectionGameState gameState radioType index =
+    case radioType of
+        ActionRadioType ->
+            { gameState | actionRadioState = updateActionRadioState index }
+
+        ToneRadioType ->
+            { gameState | toneRadioState = updateToneRadioState index }
+
+        ItemRadioType ->
+            { gameState | selectedItem = Maybe.withDefault nullItem (Array.get index gameState.itemsInShop) }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -143,7 +162,12 @@ update msg model =
             ( { model | viewState = updateTabSelectionState model.viewState tabType tabIndex }, Cmd.none )
 
         SelectRadio radioType tabIndex ->
-            ( { model | viewState = updateRadioSelectionState model.viewState radioType tabIndex }, Cmd.none )
+            ( { model
+                | gameState = updateRadioSelectionGameState model.gameState radioType tabIndex
+                , viewState = updateRadioSelectionViewState model.viewState radioType tabIndex
+              }
+            , Cmd.none
+            )
 
 
 
