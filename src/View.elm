@@ -2,6 +2,7 @@ module View exposing (view)
 
 import Types exposing (..)
 import Html exposing (..)
+import Html.Attributes as Attributes exposing (style)
 import Material.Layout as Layout
 import Material.Scheme exposing (topWithScheme)
 import Material.Color as Color
@@ -280,7 +281,7 @@ tradeTab model =
 previewCell : Model -> List (Html Msg)
 previewCell model =
     [ cellHeaderText "Preview and Speak"
-    , cellBody1Text "I have a wonderful item for you! The Sword of Notre Dame!"
+    , cellBody1Text ("I have just the item for you; " ++ model.gameState.selectedItem.inSentence ++ "!")
     , button model 1 "Speak"
     ]
 
@@ -314,6 +315,14 @@ actionCell model =
 constructCell : Model -> List (Html Msg)
 constructCell model =
     [ cellHeaderText "Construct Sentence"
-    , cellSubheaderText "Offering: Sword of Notre Dame"
+    , cellSubheaderText ("Offering: " ++ model.gameState.selectedItem.name)
     , button model 2 "Select Different Item"
+    , renderList <| List.map (\s -> button model 0 s) <| List.map .name model.gameState.itemsInShop
     ]
+
+
+renderList : List (Html msg) -> Html msg
+renderList lst =
+    lst
+        |> List.map (\l -> li [] [ l ])
+        |> ul [ Attributes.style [ ( "height", "400px" ), ( "overflow-y", "scroll" ) ] ]

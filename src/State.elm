@@ -23,9 +23,24 @@ init =
                 , toneRadioState = Cheerful
                 , toneRadioIndex = 0
                 }
+            , gameState =
+                { itemsInShop = [ dagger, trailMix ]
+                , gold = 50
+                , selectedItem = dagger
+                }
             }
     in
         ( model, Layout.sub0 Mdl )
+
+
+dagger : BuyableItem
+dagger =
+    { name = "Dagger", inSentence = "a dagger", price = 10 }
+
+
+trailMix : BuyableItem
+trailMix =
+    { name = "Trail Mix", inSentence = "a packet of trail mix", price = 1 }
 
 
 

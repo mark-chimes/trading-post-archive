@@ -11,6 +11,7 @@ type alias Mdl =
 type alias Model =
     { mdl : Mdl
     , viewState : ViewState
+    , gameState : GameState
     }
 
 
@@ -23,6 +24,13 @@ type alias ViewState =
     , actionRadioIndex : Int
     , toneRadioState : ToneState
     , toneRadioIndex : Int
+    }
+
+
+type alias GameState =
+    { gold : Int
+    , itemsInShop : List BuyableItem
+    , selectedItem : BuyableItem
     }
 
 
@@ -75,3 +83,7 @@ type alias Mop c m =
 
 type alias StringAndCommand =
     { string : String, command : Maybe String }
+
+
+type alias BuyableItem =
+    { name : String, inSentence : String, price : Int }
