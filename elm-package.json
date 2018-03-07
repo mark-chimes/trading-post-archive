@@ -1,7 +1,8 @@
 {
     "version": "1.0.0",
-    "summary": "helpful summary of your project, less than 80 characters",
+    "summary": "A fantasy-setting game wherein you play as a trading post owner",
     "repository": "https://github.com/mark-chimes/trading-post.git",
+    "homepage": "https://mark-chimes.github.io/trading-post", 
     "license": "BSD3",
     "source-directories": [
         "src"
