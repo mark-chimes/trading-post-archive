@@ -22,6 +22,7 @@ init =
                 , actionRadioIndex = 0
                 , toneRadioState = Cheerful
                 , toneRadioIndex = 0
+                , itemRadioIndex = 0
                 }
             , gameState =
                 { itemsInShop = [ dagger, trailMix ]
@@ -123,6 +124,9 @@ updateRadioSelectionState viewState radioType tabIndex =
 
         ToneRadioType ->
             { viewState | toneRadioState = updateToneRadioState tabIndex, toneRadioIndex = tabIndex }
+
+        ItemRadioType ->
+            { viewState | itemRadioIndex = tabIndex }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

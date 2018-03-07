@@ -161,6 +161,9 @@ isRadioActive viewState radioType index =
         ToneRadioType ->
             (viewState.toneRadioIndex == index)
 
+        ItemRadioType ->
+            (viewState.itemRadioIndex == index)
+
 
 tab : String -> Tabs.Label msg
 tab content =
@@ -315,9 +318,14 @@ actionCell model =
 constructCell : Model -> List (Html Msg)
 constructCell model =
     [ cellHeaderText "Construct Sentence"
-    , cellSubheaderText ("Offering: " ++ model.gameState.selectedItem.name)
-    , button model 2 "Select Different Item"
-    , renderList <| List.map (\s -> button model 0 s) <| List.map .name model.gameState.itemsInShop
+    , cellSubheaderText ("Select Item to Offer")
+    , renderList <|
+        radioButtons model.mdl
+            model.viewState
+            "itemRadioButtons"
+            ItemRadioType
+        <|
+            List.map .name model.gameState.itemsInShop
     ]
 
 
@@ -325,4 +333,4 @@ renderList : List (Html msg) -> Html msg
 renderList lst =
     lst
         |> List.map (\l -> li [] [ l ])
-        |> ul [ Attributes.style [ ( "height", "400px" ), ( "overflow-y", "scroll" ) ] ]
+        |> ul [ Attributes.style [ ( "list-style", "none" ), ( "height", "400px" ), ( "overflow-y", "scroll" ) ] ]

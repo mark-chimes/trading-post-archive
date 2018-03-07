@@ -24,6 +24,7 @@ type alias ViewState =
     , actionRadioIndex : Int
     , toneRadioState : ToneState
     , toneRadioIndex : Int
+    , itemRadioIndex : Int
     }
 
 
@@ -75,6 +76,7 @@ type TabType
 type RadioType
     = ActionRadioType
     | ToneRadioType
+    | ItemRadioType
 
 
 type alias Mop c m =
