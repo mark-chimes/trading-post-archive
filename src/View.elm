@@ -1,9 +1,9 @@
 module View exposing (view)
 
 import Types exposing (..)
-import Html exposing (Html, button, div, text, ul, li, label, input)
+import Html exposing (Html, button, div, text, h1, h2, ul, li, label, input, span)
 import Html.Events exposing (onClick, onInput)
-import Html.Attributes as Attributes exposing (style, type_, placeholder, checked)
+import Html.Attributes as Attributes exposing (style, type_, placeholder, checked, tabindex)
 import Array.Hamt as Array
 
 
@@ -36,22 +36,22 @@ gridBox content =
 
 cellHeaderText : String -> Html msg
 cellHeaderText content =
-    div [] [ text content ]
+    div [] [ h1 [ tabindex 0 ] [ text content ] ]
 
 
 cellSubheaderText : String -> Html msg
 cellSubheaderText content =
-    div [] [ text content ]
+    div [] [ h2 [ tabindex 0 ] [ text content ] ]
 
 
 cellBody1Text : String -> Html msg
 cellBody1Text content =
-    div [] [ text content ]
+    div [] [ span [ tabindex 0 ] [ text content ] ]
 
 
 cellBody2Text : String -> Html msg
 cellBody2Text content =
-    div [] [ text content ]
+    div [] [ span [ tabindex 0 ] [ text content ] ]
 
 
 radioButtons : ViewState -> String -> RadioType -> List String -> List (Html Msg)
