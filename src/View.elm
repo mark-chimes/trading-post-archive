@@ -3,7 +3,7 @@ module View exposing (view)
 import Types exposing (..)
 import Html exposing (Html, button, div, text, ul, li, label, input)
 import Html.Events exposing (onClick, onInput)
-import Html.Attributes as Attributes exposing (style, type_, placeholder)
+import Html.Attributes as Attributes exposing (style, type_, placeholder, checked)
 import Array.Hamt as Array
 
 
@@ -23,15 +23,15 @@ viewBody model =
         []
         [ gridBox <| overviewCell model
         , gridBox <| notesCell model
-        , gridBox <| previewCell model
         , gridBox <| actionCell model
         , gridBox <| constructionCell model
+        , gridBox <| previewCell model
         ]
 
 
 gridBox : List (Html Msg) -> Html Msg
 gridBox content =
-    div [] content
+    div [ style [ ( "border", "3px solid black" ), ( "margin", "20px 30px 20px 30px" ) ] ] content
 
 
 cellHeaderText : String -> Html msg
@@ -56,13 +56,20 @@ cellBody2Text content =
 
 radioButtons : ViewState -> String -> RadioType -> List String -> List (Html Msg)
 radioButtons viewState groupName radioType names =
-    [ Html.fieldset [] <| List.map2 (radioButton viewState groupName radioType) (List.range 0 (List.length names)) names ]
+    List.map2 (radioButton viewState groupName radioType) (List.range 0 (List.length names)) names
 
 
 radioButton : ViewState -> String -> RadioType -> Int -> String -> Html Msg
 radioButton viewState groupName radioType index value =
     label []
-        [ input [ type_ "radio", Attributes.name groupName, onClick (SelectRadio radioType index) ] []
+        [ input
+            [ type_ "radio"
+            , Attributes.name groupName
+            , onClick (SelectRadio radioType index)
+            , checked <|
+                isRadioActive viewState radioType index
+            ]
+            []
         , text value
         ]
 
@@ -93,13 +100,12 @@ tab msg content =
 
 tabs : Model -> Int -> Int -> (Int -> Msg) -> List String -> Html Msg
 tabs model index activeTabIndex selectAction strings =
-    div [] (List.map2 tab (List.map selectAction (List.range 0 (List.length strings))) strings)
+    div [] <| List.map2 tab (List.map selectAction <| List.range 0 <| List.length strings) strings
 
 
 textField : Model -> Int -> String -> (String -> Msg) -> Html Msg
 textField model index label onChangeTextAction =
-    input [ placeholder label, onInput onChangeTextAction ]
-        []
+    input [ placeholder label, onInput onChangeTextAction ] []
 
 
 myButton : Model -> Int -> String -> Msg -> Html Msg
@@ -109,35 +115,38 @@ myButton model index label msg =
 
 overviewCell : Model -> List (Html Msg)
 overviewCell model =
-    [ tabs model 0 model.viewState.overviewTabIndex (SelectTab OverviewTabType) [ "Overview", "Appearance" ] ]
+    [ cellHeaderText "Customer"
+    , tabs model 0 model.viewState.overviewTabIndex (SelectTab OverviewTabType) [ "Overview", "Appearance" ]
+    ]
         ++ overviewTabState model.viewState.overviewTabState model
 
 
 overviewTabState : OverviewTabState -> Model -> List (Html Msg)
-overviewTabState overviewTabState =
+overviewTabState overviewTabState model =
     case overviewTabState of
         OverviewTab ->
-            overviewTab
+            overviewTab model.gameState
 
         DescriptionTab ->
-            appearanceTab
+            appearanceTab model.gameState
 
 
-overviewTab : Model -> List (Html Msg)
-overviewTab model =
-    [ cellSubheaderText "Joseph McFinkelstein the Brave"
-    , cellBody2Text "That guy who is looking for the magic sword"
+overviewTab : GameState -> List (Html Msg)
+overviewTab gameState =
+    [ cellSubheaderText gameState.currentCustomer.name
+    , cellBody2Text gameState.currentCustomer.description
     ]
 
 
-appearanceTab : Model -> List (Html Msg)
-appearanceTab model =
-    [ cellBody2Text "A short, stout fellow with a long, golden beard matched by a magnificient moustache. He does not seem to care much for formality. " ]
+appearanceTab : GameState -> List (Html Msg)
+appearanceTab gameState =
+    [ cellBody2Text gameState.currentCustomer.appearance ]
 
 
 notesCell : Model -> List (Html Msg)
 notesCell model =
-    [ tabs model
+    [ cellHeaderText "Review"
+    , tabs model
         1
         model.viewState.notesTabIndex
         (SelectTab NotesTabType)
@@ -164,70 +173,82 @@ notesTabState notesTabState =
 
 notesTab : Model -> List (Html Msg)
 notesTab model =
-    [ textField model 12 "Notes" (\s -> Noop) ]
+    [ cellSubheaderText "Notes"
+    , textField model 12 "Notes" (\s -> Noop)
+    ]
 
 
 logTab : Model -> List (Html Msg)
 logTab model =
-    [ cellBody2Text "Log" ]
+    [ cellSubheaderText "Log"
+    , renderList <|
+        List.map cellBody2Text model.gameState.dialog
+    ]
 
 
 tradeTab : Model -> List (Html Msg)
 tradeTab model =
-    [ cellBody2Text "Trade" ]
+    [ cellSubheaderText "Trade" ]
 
 
 previewCell : Model -> List (Html Msg)
 previewCell model =
     [ cellHeaderText "Preview and Speak"
-    , cellBody1Text <|
-        (case model.gameState.actionRadioState of
-            ItemOffer ->
-                itemOfferPreview
-
-            ItemRequest ->
-                itemRequestPreview
-
-            Listen ->
-                listenPreview
-
-            InformationOffer ->
-                informationOfferPreview
-
-            _ ->
-                unimplementedPreview
-        )
-            model
-    , myButton model 1 "Speak" Noop
+    , cellBody1Text <| previewString model.gameState
+    , myButton model 1 "Speak" <| Speak <| previewString model.gameState
     ]
 
 
-itemOfferPreview : Model -> String
-itemOfferPreview model =
-    case model.gameState.toneRadioState of
+previewString : GameState -> String
+previewString gameState =
+    (case gameState.actionRadioState of
+        ItemOffer ->
+            itemOfferPreview
+
+        ItemRequest ->
+            itemRequestPreview
+
+        Listen ->
+            listenPreview
+
+        InformationOffer ->
+            informationOfferPreview
+
+        _ ->
+            unimplementedPreview
+    )
+        gameState
+
+
+itemOfferPreview : GameState -> String
+itemOfferPreview gameState =
+    case gameState.toneRadioState of
         Cheerful ->
-            ("I know just what you need; " ++ model.gameState.selectedItem.inSentence ++ "!")
+            ("I know just what you need; " ++ gameState.selectedItem.inSentence ++ "!")
 
         Angry ->
-            ("Let me tell you something, you incontinent excuse for a derrier-based lard receptacle;\n             you are going to purchase " ++ model.gameState.selectedItem.inSentence ++ " and you'll like it!")
+            ("Let me tell you something, you incontinent excuse for a derrier-based lard receptacle; you are going to purchase "
+                ++ gameState.selectedItem.inSentence
+                ++ " and you'll like it!"
+            )
 
 
-itemRequestPreview : Model -> String
-itemRequestPreview model =
-    case model.gameState.toneRadioState of
+itemRequestPreview : GameState -> String
+itemRequestPreview gameState =
+    case gameState.toneRadioState of
         Cheerful ->
-            ("Do you perhaps have " ++ model.gameState.requestedItem.inSentence ++ " for sale?")
+            ("Do you perhaps have " ++ gameState.requestedItem.inSentence ++ " for sale?")
 
         Angry ->
             ("Listen here, you squalid bag of insalubrious detritus, if you have "
-                ++ model.gameState.requestedItem.inSentence
+                ++ gameState.requestedItem.inSentence
                 ++ " you'd better sell it to me!"
             )
 
 
-listenPreview : Model -> String
-listenPreview model =
-    case model.gameState.toneRadioState of
+listenPreview : GameState -> String
+listenPreview gameState =
+    case gameState.toneRadioState of
         Cheerful ->
             ("Please, continue...")
 
@@ -235,17 +256,17 @@ listenPreview model =
             ("You feckless, miasmic, gastro-intestinal emission! If you have something to say, then say it to my face!")
 
 
-informationOfferPreview : Model -> String
-informationOfferPreview model =
-    case model.gameState.toneRadioState of
+informationOfferPreview : GameState -> String
+informationOfferPreview gameState =
+    case gameState.toneRadioState of
         Cheerful ->
-            ("There's something very interesting about " ++ model.gameState.currentlyOfferedTopic.inSentence ++ " that I think you should know...")
+            ("There's something very interesting about " ++ gameState.currentlyOfferedTopic.inSentence ++ " that I think you should know...")
 
         Angry ->
-            ("You glassy-eyed, addlepated ignoramus! If only you knew what I know about " ++ model.gameState.currentlyOfferedTopic.inSentence ++ "!")
+            ("You glassy-eyed, addlepated ignoramus! If only you knew what I know about " ++ gameState.currentlyOfferedTopic.inSentence ++ "!")
 
 
-unimplementedPreview : Model -> String
+unimplementedPreview : GameState -> String
 unimplementedPreview model =
     ("Action not implemented")
 
@@ -358,4 +379,12 @@ renderList : List (Html Msg) -> Html Msg
 renderList lst =
     lst
         |> List.map (\l -> li [] [ l ])
-        |> ul [ Attributes.style [ ( "list-style", "none" ), ( "height", "200px" ), ( "overflow-y", "scroll" ) ] ]
+        |> ul
+            [ style
+                [ ( "border", "1px solid black" )
+                , ( "margin", "20px 30px 10px 30px" )
+                , ( "list-style", "none" )
+                , ( "height", "200px" )
+                , ( "overflow-y", "scroll" )
+                ]
+            ]

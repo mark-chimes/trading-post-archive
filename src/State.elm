@@ -32,10 +32,20 @@ init =
                 , requestedItem = trailMix
                 , informationTopics = Array.fromList [ georgeTopic, amuletTopic, goblinsTopic ]
                 , currentlyOfferedTopic = georgeTopic
+                , currentCustomer = joseph
+                , dialog = []
                 }
             }
     in
         ( model, Cmd.none )
+
+
+joseph : Customer
+joseph =
+    { name = "Joseph McFinkelstein the Brave"
+    , description = "That guy who is looking for the magic sword"
+    , appearance = "A short, stout fellow with a long, golden beard matched by a magnificient moustache. He does not seem to care much for formality. "
+    }
 
 
 nullTopic : InformationTopic
@@ -188,6 +198,11 @@ updateRadioSelectionGameState gameState radioType index =
             { gameState | currentlyOfferedTopic = Maybe.withDefault nullTopic (Array.get index gameState.informationTopics) }
 
 
+appendDialog : GameState -> String -> GameState
+appendDialog gameState string =
+    { gameState | dialog = string :: gameState.dialog }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -204,6 +219,9 @@ update msg model =
               }
             , Cmd.none
             )
+
+        Speak string ->
+            ( { model | gameState = appendDialog model.gameState string }, Cmd.none )
 
 
 

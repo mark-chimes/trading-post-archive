@@ -32,7 +32,16 @@ type alias GameState =
     , requestedItem : BuyableItem
     , informationTopics : Array.Array InformationTopic
     , currentlyOfferedTopic : InformationTopic
+    , currentCustomer : Customer
+    , dialog : List String
     }
+
+
+type Msg
+    = Noop
+    | SelectTab TabType Int
+    | SelectRadio RadioType Int
+    | Speak String
 
 
 type OverviewTabState
@@ -61,12 +70,6 @@ type ToneState
     | Angry
 
 
-type Msg
-    = Noop
-    | SelectTab TabType Int
-    | SelectRadio RadioType Int
-
-
 type TabType
     = OverviewTabType
     | NotesTabType
@@ -80,8 +83,8 @@ type RadioType
     | InformationOfferRadioType
 
 
-type alias StringAndCommand =
-    { string : String, command : Maybe String }
+type alias Customer =
+    { name : String, description : String, appearance : String }
 
 
 type alias BuyableItem =
