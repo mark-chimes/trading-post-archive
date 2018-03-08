@@ -1,156 +1,70 @@
 module View exposing (view)
 
 import Types exposing (..)
-import Html exposing (..)
-import Html.Attributes as Attributes exposing (style, type_)
-import Material.Layout as Layout
-import Material.Scheme exposing (topWithScheme)
-import Material.Color as Color
-import Material.Typography as Typo
-import Material.Options as Options exposing (Style, css)
-import Material.Grid as Grid
-import Material.Elevation as Elevation
-import Material.Button as Button
-import Material.Tabs as Tabs
-import Material.Toggles as Toggles
-import Material.Textfield as Textfield
+import Html exposing (Html, button, div, text, ul, li, label, input)
+import Html.Events exposing (onClick, onInput)
+import Html.Attributes as Attributes exposing (style, type_, placeholder)
 import Array.Hamt as Array
 
 
 view : Model -> Html Msg
 view model =
-    Material.Scheme.topWithScheme Color.Brown Color.DeepOrange <|
-        Layout.render Mdl
-            model.mdl
-            [ Layout.fixedHeader
-            ]
-            { header = [ viewHeader model ]
-            , drawer = []
-            , tabs =
-                ( [ text "Different Customer", text "Current Customer", text "Shop" ]
-                , tabColors
-                )
-            , main = [ viewBody model ]
-            }
+    viewBody model
 
 
 viewHeader : Model -> Html Msg
 viewHeader model =
-    Layout.row
-        headerColors
-        [ Layout.title [] [ text "Trading Post" ]
-        , Layout.spacer
-        , Layout.navigation []
-            []
-        ]
+    text "Trading Post"
 
 
 viewBody : Model -> Html Msg
 viewBody model =
     div
         []
-        [ [ gridBox 4 <| overviewCell model
-          , gridBox 4 <| notesCell model
-          , gridBox 4 <| previewCell model
-          , gridBox 6 <| actionCell model
-          , gridBox 6 <| constructionCell model
-          ]
-            |> Grid.grid []
+        [ gridBox <| overviewCell model
+        , gridBox <| notesCell model
+        , gridBox <| previewCell model
+        , gridBox <| actionCell model
+        , gridBox <| constructionCell model
         ]
 
 
-headerColors : List (Mop c m)
-headerColors =
-    [ Color.background <| Color.color Color.Brown Color.S900
-    , Color.text <| Color.white
-    ]
-
-
-tabColors : List (Mop c m)
-tabColors =
-    [ Color.background (Color.color Color.Brown Color.S400)
-    , Color.text <| Color.white
-    ]
-
-
-cellBackColor : Mop c m
-cellBackColor =
-    Color.background (Color.color Color.Brown Color.S50)
-
-
-cellStyle : List (Style a)
-cellStyle =
-    [ css "padding-top" "16px"
-    , css "padding-bottom" "32px"
-    , css "padding-left" "16px"
-    , css "padding-right" "16px"
-    ]
-
-
-basicCell : List (Style a) -> List (Html a) -> Grid.Cell a
-basicCell styling =
-    Grid.cell <| List.concat [ cellStyle, styling ]
-
-
-gridBoxElevation : Mop a m
-gridBoxElevation =
-    Elevation.e6
-
-
-gridBox : Int -> List (Html m) -> Grid.Cell m
-gridBox boxSize content =
-    basicCell [ gridBoxElevation, Grid.size Grid.All boxSize, cellBackColor, Color.text Color.black ] content
+gridBox : List (Html Msg) -> Html Msg
+gridBox content =
+    div [] content
 
 
 cellHeaderText : String -> Html msg
 cellHeaderText content =
-    Options.styled p
-        [ Typo.headline ]
-        [ text content ]
+    div [] [ text content ]
 
 
 cellSubheaderText : String -> Html msg
 cellSubheaderText content =
-    Options.styled p
-        [ Typo.subhead
-        , css "padding-top" "16px"
-        ]
-        [ text content ]
+    div [] [ text content ]
 
 
 cellBody1Text : String -> Html msg
 cellBody1Text content =
-    Options.styled p
-        [ Typo.body1 ]
-        [ text content ]
+    div [] [ text content ]
 
 
 cellBody2Text : String -> Html msg
 cellBody2Text content =
-    Options.styled p
-        [ Typo.body2 ]
-        [ text content ]
+    div [] [ text content ]
 
 
-radioButtons : Mdl -> ViewState -> String -> RadioType -> List String -> List (Html Msg)
-radioButtons mdl viewState groupName radioType names =
-    List.map2 (radioButton mdl viewState groupName radioType) (List.range 0 (List.length names)) names
+radioButtons : ViewState -> String -> RadioType -> List String -> List (Html Msg)
+radioButtons viewState groupName radioType names =
+    [ Html.fieldset [] <| List.map2 (radioButton viewState groupName radioType) (List.range 0 (List.length names)) names ]
 
 
-radioButton : Mdl -> ViewState -> String -> RadioType -> Int -> String -> Html Msg
-radioButton mdl viewState groupName radioType index name =
-    Toggles.radio
-        Mdl
-        [ index ]
-        mdl
-        [ Toggles.value <| isRadioActive viewState radioType index
-        , Toggles.group groupName
-        , Options.onToggle (SelectRadio radioType index)
-        , css "padding-left" "16px"
-        , css "padding-right" "16px"
-        , css "padding-bottom" "32px"
+radioButton : ViewState -> String -> RadioType -> Int -> String -> Html Msg
+radioButton viewState groupName radioType index value =
+    label []
+        [ input [ type_ "radio", Attributes.name groupName, onClick (SelectRadio radioType index) ] []
+        , text value
         ]
-        [ text name ]
 
 
 isRadioActive : ViewState -> RadioType -> Int -> Bool
@@ -172,51 +86,25 @@ isRadioActive viewState radioType index =
             (viewState.informationOfferRadioIndex == index)
 
 
-tab : String -> Tabs.Label msg
-tab content =
-    Tabs.label
-        [ Options.center ]
-        [ Options.span [ css "width" "4px" ] []
-        , text content
-        ]
+tab : Msg -> String -> Html Msg
+tab msg content =
+    button [ onClick msg ] [ text content ]
 
 
 tabs : Model -> Int -> Int -> (Int -> Msg) -> List String -> Html Msg
 tabs model index activeTabIndex selectAction strings =
-    Tabs.render Mdl
-        [ index ]
-        model.mdl
-        [ Tabs.ripple
-        , Tabs.onSelectTab selectAction
-        , Tabs.activeTab activeTabIndex
-        , css "padding-bottom" "16px"
-        ]
-        (List.map tab strings)
-        []
+    div [] (List.map2 tab (List.map selectAction (List.range 0 (List.length strings))) strings)
 
 
 textField : Model -> Int -> String -> (String -> Msg) -> Html Msg
 textField model index label onChangeTextAction =
-    Textfield.render Mdl
-        [ index ]
-        model.mdl
-        [ Textfield.label label
-        , Textfield.textarea
-        , Options.onInput onChangeTextAction
-        ]
+    input [ placeholder label, onInput onChangeTextAction ]
         []
 
 
-button : Model -> Int -> String -> Html Msg
-button model index label =
-    Button.render Mdl
-        [ index ]
-        model.mdl
-        [ Button.raised
-        , Button.ripple
-        ]
-        [ text label
-        ]
+myButton : Model -> Int -> String -> Msg -> Html Msg
+myButton model index label msg =
+    button [ onClick msg ] [ text label ]
 
 
 overviewCell : Model -> List (Html Msg)
@@ -310,7 +198,7 @@ previewCell model =
                 unimplementedPreview
         )
             model
-    , button model 1 "Speak"
+    , myButton model 1 "Speak" Noop
     ]
 
 
@@ -367,7 +255,7 @@ actionCell model =
     ([ cellHeaderText "Action"
      , cellSubheaderText "Type of Speech"
      ]
-        ++ radioButtons model.mdl
+        ++ radioButtons
             model.viewState
             "actionRadioButtons"
             ActionRadioType
@@ -380,7 +268,7 @@ actionCell model =
             , "Chatter"
             ]
         ++ [ cellSubheaderText "Tone of Voice" ]
-        ++ radioButtons model.mdl
+        ++ radioButtons
             model.viewState
             "toneRadioButtons"
             ToneRadioType
@@ -412,15 +300,15 @@ constructionCell model =
 
 offerItemBlock : Model -> List (Html Msg)
 offerItemBlock model =
-    [ cellSubheaderText ("Item to Offer")
+    [ cellSubheaderText "Item to Offer"
     , renderList <|
-        radioButtons model.mdl
+        radioButtons
             model.viewState
             "itemRadioButtons"
             ItemRadioType
         <|
             List.map .name (Array.toList model.gameState.itemsInShop)
-    , button model 2 "View Selected Item Details"
+    , myButton model 2 "View Selected Item Details" Noop
     ]
 
 
@@ -428,13 +316,13 @@ requestItemBlock : Model -> List (Html Msg)
 requestItemBlock model =
     [ cellSubheaderText ("Item to Request")
     , renderList <|
-        radioButtons model.mdl
+        radioButtons
             model.viewState
             "requestedItemRadioButtons"
             RequestedItemRadioType
         <|
             List.map .name (Array.toList model.gameState.requestableItems)
-    , button model 3 "View Selected Item Details"
+    , myButton model 3 "View Selected Item Details" Noop
     ]
 
 
@@ -442,13 +330,13 @@ informationOfferBlock : Model -> List (Html Msg)
 informationOfferBlock model =
     [ cellSubheaderText ("Information to offer")
     , renderList <|
-        radioButtons model.mdl
+        radioButtons
             model.viewState
             "informationOfferRadioButtons"
             InformationOfferRadioType
         <|
             List.map .name (Array.toList model.gameState.informationTopics)
-    , button model 3 "View Selected Item Details"
+    , myButton model 3 "View Selected Item Details" Noop
     ]
 
 
@@ -466,7 +354,7 @@ unimplementedBlock model =
     [ cellSubheaderText ("Action not yet implemented") ]
 
 
-renderList : List (Html msg) -> Html msg
+renderList : List (Html Msg) -> Html Msg
 renderList lst =
     lst
         |> List.map (\l -> li [] [ l ])

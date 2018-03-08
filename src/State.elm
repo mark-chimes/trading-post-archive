@@ -1,8 +1,6 @@
-port module State exposing (init, update)
+port module State exposing (init, update, subscriptions)
 
 import Types exposing (..)
-import Material
-import Material.Layout as Layout
 import Array.Hamt as Array
 
 
@@ -13,8 +11,7 @@ init : ( Model, Cmd Msg )
 init =
     let
         model =
-            { mdl = Layout.setTabsWidth 100 Material.model
-            , viewState =
+            { viewState =
                 { overviewTabState = OverviewTab
                 , overviewTabIndex = 0
                 , notesTabState = NotesTab
@@ -38,7 +35,7 @@ init =
                 }
             }
     in
-        ( model, Layout.sub0 Mdl )
+        ( model, Cmd.none )
 
 
 nullTopic : InformationTopic
@@ -197,10 +194,6 @@ update msg model =
         Noop ->
             ( model, Cmd.none )
 
-        -- Boilerplate: Mdl action handler.
-        Mdl msg_ ->
-            Material.update Mdl msg_ model
-
         SelectTab tabType tabIndex ->
             ( { model | viewState = updateTabSelectionState model.viewState tabType tabIndex }, Cmd.none )
 
@@ -215,3 +208,8 @@ update msg model =
 
 
 -- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch []

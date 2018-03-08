@@ -1,17 +1,10 @@
 module Types exposing (..)
 
-import Material.Options as Options
-import Material
 import Array.Hamt as Array
 
 
-type alias Mdl =
-    Material.Model
-
-
 type alias Model =
-    { mdl : Mdl
-    , viewState : ViewState
+    { viewState : ViewState
     , gameState : GameState
     }
 
@@ -70,7 +63,6 @@ type ToneState
 
 type Msg
     = Noop
-    | Mdl (Material.Msg Msg)
     | SelectTab TabType Int
     | SelectRadio RadioType Int
 
@@ -86,10 +78,6 @@ type RadioType
     | ItemRadioType
     | RequestedItemRadioType
     | InformationOfferRadioType
-
-
-type alias Mop c m =
-    Options.Property c m
 
 
 type alias StringAndCommand =
