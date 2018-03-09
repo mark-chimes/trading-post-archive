@@ -25,7 +25,8 @@ init =
             , gameState =
                 { itemsInShop = Array.fromList [ dagger, trailMix ]
                 , gold = 50
-                , actionRadioState = ItemOffer
+                , goldAsked = 0
+                , actionRadioState = MoneyDiscussion
                 , toneRadioState = Cheerful
                 , selectedItem = dagger
                 , requestableItems = Array.fromList [ trailMix, elysiumSword ]
@@ -119,21 +120,24 @@ updateActionRadioState : Int -> ActionState
 updateActionRadioState index =
     case index of
         0 ->
-            ItemOffer
+            MoneyDiscussion
 
         1 ->
-            ItemRequest
+            ItemOffer
 
         2 ->
-            Listen
+            ItemRequest
 
         3 ->
-            InformationOffer
+            Listen
 
         4 ->
-            Inquiry
+            InformationOffer
 
         5 ->
+            Inquiry
+
+        6 ->
             Inform
 
         _ ->
@@ -203,6 +207,11 @@ appendDialog gameState string =
     { gameState | dialog = string :: gameState.dialog }
 
 
+changeMoney : GameState -> Int -> GameState
+changeMoney gameState int =
+    { gameState | goldAsked = int }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -222,6 +231,9 @@ update msg model =
 
         Speak string ->
             ( { model | gameState = appendDialog model.gameState string }, Cmd.none )
+
+        ChangeMoney int ->
+            ( { model | gameState = changeMoney model.gameState int }, Cmd.none )
 
 
 

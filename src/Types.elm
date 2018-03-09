@@ -24,6 +24,7 @@ type alias ViewState =
 
 type alias GameState =
     { gold : Int
+    , goldAsked : Int
     , itemsInShop : Array.Array BuyableItem
     , actionRadioState : ActionState
     , toneRadioState : ToneState
@@ -42,6 +43,7 @@ type Msg
     | SelectTab TabType Int
     | SelectRadio RadioType Int
     | Speak String
+    | ChangeMoney Int
 
 
 type OverviewTabState
@@ -56,7 +58,8 @@ type NotesTabState
 
 
 type ActionState
-    = ItemOffer
+    = MoneyDiscussion
+    | ItemOffer
     | ItemRequest
     | Listen
     | InformationOffer

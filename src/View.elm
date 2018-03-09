@@ -219,6 +219,9 @@ previewString gameState =
         InformationOffer ->
             informationOfferPreview
 
+        MoneyDiscussion ->
+            moneyPreview
+
         _ ->
             unimplementedPreview
     )
@@ -271,6 +274,16 @@ informationOfferPreview gameState =
             ("You glassy-eyed, addlepated ignoramus! If only you knew what I know about " ++ gameState.currentlyOfferedTopic.inSentence ++ "!")
 
 
+moneyPreview : GameState -> String
+moneyPreview gameState =
+    case gameState.toneRadioState of
+        Cheerful ->
+            ("Alright, that will be " ++ toString gameState.goldAsked ++ " gold !")
+
+        Angry ->
+            ("You flaccid, grotesquely malformed, soft-shelled gastropod! You'll have to give me " ++ toString gameState.goldAsked ++ " gold!")
+
+
 unimplementedPreview : GameState -> String
 unimplementedPreview model =
     ("Action not implemented")
@@ -284,7 +297,8 @@ actionCell model =
         model.viewState
         "actionRadioButtons"
         ActionRadioType
-        [ "Item Offer"
+        [ "Money Discussion"
+        , "Item Offer"
         , "Item Request"
         , "Listen"
         , "Information Offer"
@@ -317,6 +331,9 @@ constructionCell model =
 
                 InformationOffer ->
                     informationOfferBlock
+
+                MoneyDiscussion ->
+                    moneyBlock
 
                 _ ->
                     unimplementedBlock
@@ -366,13 +383,23 @@ informationOfferBlock model =
     ]
 
 
-
---    , div [] [ input [ Attributes.placeholder "Price", Attributes.type_ "number" ] [] ]
-
-
 listenBlock : Model -> List (Html Msg)
 listenBlock model =
     [ cellSubheaderText ("Listening (no options)") ]
+
+
+moneyBlock : Model -> List (Html Msg)
+moneyBlock model =
+    [ cellSubheaderText "Money"
+    , div []
+        [ input
+            [ Attributes.placeholder "Gold"
+            , Attributes.type_ "number"
+            , onInput <| \n -> ChangeMoney <| Result.withDefault 0 <| String.toInt n
+            ]
+            []
+        ]
+    ]
 
 
 unimplementedBlock : Model -> List (Html Msg)
