@@ -1,9 +1,7 @@
-:focus {
-  background: pink;
-}
+
 
 :root {
-    --main-bg-color: #795548;
+    --main-bg-color: #795548;	
 	--grid-bg-color: #A1887F;
 	--inner-bg-color: #EFEBE9;
 	--border-color: #3E2723;
@@ -16,12 +14,18 @@
 	--text-size: 16px; 
 }
 
+:focus {
+  background: var(--border-color);
+  color: white;
+}
+
 body {
   font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
   text-align: center;
   color: #293c4b;
-  background: var(--main-bg-color) ;
+  background-image: url("../wood-texture.jpg");
+  background-repeat:repeat;
 }
 
 div.gridBox {
@@ -30,6 +34,7 @@ div.gridBox {
 	background: var(--grid-bg-color);
 	margin: 20px 30px 20px 30px;
 	box-shadow: 10px 10px 5px var(--border-color);
+	background-image: url("../old-paper-texture.jpg");
 } 
 
 h1 {
@@ -52,6 +57,8 @@ div.cellBody1Text {
 	margin: 20px 30px 20px 30px; 
 	background: var(--inner-bg-color);
 	font-family: var(--text-font);
+	background-image: url("../textured-paper.png");
+	background-repeat:repeat;
 } 
 
 div.cellBody2Text {
@@ -62,6 +69,8 @@ div.cellBody2Text {
 	margin: 20px 30px 20px 30px; 
 	background: var(--inner-bg-color);
 	font-family: var(--text-font);
+	background-image: url("../textured-paper.png");
+	background-repeat:repeat;
 } 
 
 div.radioGroup {
@@ -70,6 +79,8 @@ div.radioGroup {
 	margin: 20px 30px 20px 30px; 
 	background: var(--inner-bg-color);
 	font-family: var(--text-font);
+	background-image: url("../textured-paper.png");
+	background-repeat:repeat;
 } 
 
 input[type=radio] {
@@ -91,6 +102,8 @@ textarea {
 	font-size: var(--text-size);	
 	margin: 5px 10px 5px 30px; 
 	font-family: var(--text-font);
+	background-image: url("../textured-paper.png");
+	background-repeat:repeat;
 }
 
 
@@ -120,4 +133,6 @@ ul {
     list-style: none; 
 	height: 200px;
 	overflow-y: scroll;
+	background-image: url("../textured-paper.png");
+	background-repeat:repeat;
 }
