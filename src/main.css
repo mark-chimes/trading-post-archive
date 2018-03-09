@@ -7,10 +7,41 @@ body {
   margin: 0;
   text-align: center;
   color: #293c4b;
+  background: SeaShell ;
 }
 
 h1 {
-  font-size: 30px;
+	color: blue;
+	font-size: 30px;
+}
+
+h2 {
+	color: magenta;
+	font-size: 25px;
+}
+
+div.cellBody1Text {
+	font-size: 16px;
+	border: blue 1px solid; 
+	margin: 20px 30px 20px 30px; 
+} 
+
+div.cellBody2Text {
+	font-size: 20px;
+	border: Magenta 1px solid; 
+	margin: 20px 30px 20px 30px; 
+} 
+
+div.radioGroup {
+	border: orange 1px solid; 
+	margin: 20px 30px 20px 30px; 
+} 
+
+input[type=radio] {
+	margin: 5px 10px 5px 30px; 
+}
+
+label.radioLabel {
 }
 
 img {
@@ -18,10 +49,24 @@ img {
   max-width: 200px;
 }
 
-span { 
+span {
 	margin : 5px 5px;
 }
 
 button {
-  margin: 5px 5px;
+	margin: 5px 5px;
+}
+
+ div.gridBox {
+	border: Chartreuse 3px solid; 
+	margin: 20px 30px 20px 30px; 
+} 
+
+
+ul {
+	border: 1px solid black;
+	margin: 20px 30px 10px 30px;
+    list-style: none; 
+	height: 200px;
+	overflow-y: scroll;
 }

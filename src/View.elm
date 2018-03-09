@@ -3,7 +3,7 @@ module View exposing (view)
 import Types exposing (..)
 import Html exposing (Html, button, div, text, h1, h2, ul, li, label, input, span)
 import Html.Events exposing (onClick, onInput)
-import Html.Attributes as Attributes exposing (style, type_, placeholder, checked, tabindex)
+import Html.Attributes as Attributes exposing (attribute, type_, placeholder, checked, tabindex)
 import Array.Hamt as Array
 
 
@@ -31,7 +31,7 @@ viewBody model =
 
 gridBox : List (Html Msg) -> Html Msg
 gridBox content =
-    div [ style [ ( "border", "3px solid black" ), ( "margin", "20px 30px 20px 30px" ) ] ] content
+    div [ attribute "class" "gridBox" ] content
 
 
 cellHeaderText : String -> Html msg
@@ -46,12 +46,17 @@ cellSubheaderText content =
 
 cellBody1Text : String -> Html msg
 cellBody1Text content =
-    div [] [ span [ tabindex 0 ] [ text content ] ]
+    div [ attribute "class" "cellBody1Text" ] [ span [ tabindex 0 ] [ text content ] ]
 
 
 cellBody2Text : String -> Html msg
 cellBody2Text content =
-    div [] [ span [ tabindex 0 ] [ text content ] ]
+    div [ attribute "class" "cellBody2Text" ] [ span [ tabindex 0 ] [ text content ] ]
+
+
+radioGroup : ViewState -> String -> RadioType -> List String -> Html Msg
+radioGroup viewState groupName radioType names =
+    div [ attribute "class" "radioGroup" ] <| radioButtons viewState groupName radioType names
 
 
 radioButtons : ViewState -> String -> RadioType -> List String -> List (Html Msg)
@@ -61,7 +66,7 @@ radioButtons viewState groupName radioType names =
 
 radioButton : ViewState -> String -> RadioType -> Int -> String -> Html Msg
 radioButton viewState groupName radioType index value =
-    label []
+    label [ attribute "class" "radioLabel" ]
         [ input
             [ type_ "radio"
             , Attributes.name groupName
@@ -275,25 +280,25 @@ actionCell : Model -> List (Html Msg)
 actionCell model =
     ([ cellHeaderText "Action"
      , cellSubheaderText "Type of Speech"
+     , radioGroup
+        model.viewState
+        "actionRadioButtons"
+        ActionRadioType
+        [ "Item Offer"
+        , "Item Request"
+        , "Listen"
+        , "Information Offer"
+        , "Inquiry"
+        , "Inform"
+        , "Chatter"
+        ]
+     , cellSubheaderText "Tone of Voice"
+     , radioGroup
+        model.viewState
+        "toneRadioButtons"
+        ToneRadioType
+        [ "Friendly", "Aggressive" ]
      ]
-        ++ radioButtons
-            model.viewState
-            "actionRadioButtons"
-            ActionRadioType
-            [ "Item Offer"
-            , "Item Request"
-            , "Listen"
-            , "Information Offer"
-            , "Inquiry"
-            , "Inform"
-            , "Chatter"
-            ]
-        ++ [ cellSubheaderText "Tone of Voice" ]
-        ++ radioButtons
-            model.viewState
-            "toneRadioButtons"
-            ToneRadioType
-            [ "Friendly", "Aggressive" ]
     )
 
 
@@ -380,11 +385,4 @@ renderList lst =
     lst
         |> List.map (\l -> li [] [ l ])
         |> ul
-            [ style
-                [ ( "border", "1px solid black" )
-                , ( "margin", "20px 30px 10px 30px" )
-                , ( "list-style", "none" )
-                , ( "height", "200px" )
-                , ( "overflow-y", "scroll" )
-                ]
-            ]
+            []
