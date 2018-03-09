@@ -28,7 +28,8 @@ div.gridBox {
 	border: var(--border-color) 3px solid; 
 	border-radius: var(--border-radius);
 	background: var(--grid-bg-color);
-	margin: 20px 30px 20px 30px; 
+	margin: 20px 30px 20px 30px;
+	box-shadow: 10px 10px 5px var(--border-color);
 } 
 
 h1 {
@@ -46,29 +47,29 @@ h2 {
 div.cellBody1Text {
 	color: var(--text-color);
 	font-size: var(--text-size);
-	border: var(--border-color) 1px solid; 
+	border: var(--border-color) 2px solid; 
 	border-radius: var(--border-radius);
 	margin: 20px 30px 20px 30px; 
 	background: var(--inner-bg-color);
-	font-family: var(--text-font)
+	font-family: var(--text-font);
 } 
 
 div.cellBody2Text {
 	color: var(--text-color);
 	font-size: var(--text-size);
-	border: var(--border-color) 1px solid; 
+	border: var(--border-color) 2px solid; 
 	border-radius: var(--border-radius);
 	margin: 20px 30px 20px 30px; 
 	background: var(--inner-bg-color);
-	font-family: var(--text-font)
+	font-family: var(--text-font);
 } 
 
 div.radioGroup {
-	border: var(--border-color) 1px solid; 
+	border: var(--border-color) 2px solid; 
 	border-radius: var(--border-radius);
 	margin: 20px 30px 20px 30px; 
 	background: var(--inner-bg-color);
-	font-family: var(--text-font)
+	font-family: var(--text-font);
 } 
 
 input[type=radio] {
@@ -89,7 +90,7 @@ textarea {
 	border-radius: var(--border-radius);
 	font-size: var(--text-size);	
 	margin: 5px 10px 5px 30px; 
-	font-family: var(--text-font)
+	font-family: var(--text-font);
 }
 
 
@@ -103,16 +104,17 @@ span {
 }
 
 button {
-	margin: 5px 5px;
+	margin: 5px 5px 20px 5px;
 	border: var(--border-color) 3px solid; 
 	border-radius: var(--button-border-radius);
 	background: var(--inner-bg-color);
 	font-size: var(--text-size);
-	font-family: var(--text-font)
+	font-family: var(--text-font);
+	box-shadow: 4px 4px 3px var(--border-color);
 }
 
 ul {
-	border: 1px solid var(--border-color);
+	border: 2px solid var(--border-color);
 	background: var(--inner-bg-color);
 	margin: 20px 30px 10px 30px;
     list-style: none; 
