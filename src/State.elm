@@ -21,11 +21,13 @@ init =
                 , itemRadioIndex = 0
                 , requestedItemRadioIndex = 0
                 , informationOfferRadioIndex = 0
+                , offerGetRadioIndex = 0
                 }
             , gameState =
                 { itemsInShop = Array.fromList [ dagger, trailMix ]
                 , gold = 50
-                , goldAsked = 0
+                , goldOfferGetVal = 1
+                , offerOrGet = Offer
                 , actionRadioState = MoneyDiscussion
                 , toneRadioState = Cheerful
                 , selectedItem = dagger
@@ -182,6 +184,9 @@ updateRadioSelectionViewState viewState radioType index =
         InformationOfferRadioType ->
             { viewState | informationOfferRadioIndex = index }
 
+        OfferGetRadioType ->
+            { viewState | offerGetRadioIndex = index }
+
 
 updateRadioSelectionGameState : GameState -> RadioType -> Int -> GameState
 updateRadioSelectionGameState gameState radioType index =
@@ -201,6 +206,9 @@ updateRadioSelectionGameState gameState radioType index =
         InformationOfferRadioType ->
             { gameState | currentlyOfferedTopic = Maybe.withDefault nullTopic (Array.get index gameState.informationTopics) }
 
+        OfferGetRadioType ->
+            { gameState | offerOrGet = updateOfferOrGet index }
+
 
 appendDialog : GameState -> String -> GameState
 appendDialog gameState string =
@@ -209,7 +217,23 @@ appendDialog gameState string =
 
 changeMoney : GameState -> Int -> GameState
 changeMoney gameState int =
-    { gameState | goldAsked = int }
+    { gameState
+        | goldOfferGetVal =
+            if int < 10000000 then
+                int
+            else
+                10000000
+    }
+
+
+updateOfferOrGet : Int -> OfferGet
+updateOfferOrGet index =
+    case index of
+        0 ->
+            Offer
+
+        _ ->
+            Get
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

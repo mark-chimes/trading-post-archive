@@ -19,12 +19,14 @@ type alias ViewState =
     , itemRadioIndex : Int
     , requestedItemRadioIndex : Int
     , informationOfferRadioIndex : Int
+    , offerGetRadioIndex : Int
     }
 
 
 type alias GameState =
     { gold : Int
-    , goldAsked : Int
+    , goldOfferGetVal : Int
+    , offerOrGet : OfferGet
     , itemsInShop : Array.Array BuyableItem
     , actionRadioState : ActionState
     , toneRadioState : ToneState
@@ -44,6 +46,11 @@ type Msg
     | SelectRadio RadioType Int
     | Speak String
     | ChangeMoney Int
+
+
+type OfferGet
+    = Offer
+    | Get
 
 
 type OverviewTabState
@@ -84,6 +91,7 @@ type RadioType
     | ItemRadioType
     | RequestedItemRadioType
     | InformationOfferRadioType
+    | OfferGetRadioType
 
 
 type alias Customer =

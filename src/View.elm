@@ -97,6 +97,9 @@ isRadioActive viewState radioType index =
         InformationOfferRadioType ->
             (viewState.informationOfferRadioIndex == index)
 
+        OfferGetRadioType ->
+            (viewState.offerGetRadioIndex == index)
+
 
 tab : Msg -> String -> Html Msg
 tab msg content =
@@ -278,10 +281,26 @@ moneyPreview : GameState -> String
 moneyPreview gameState =
     case gameState.toneRadioState of
         Cheerful ->
-            ("Alright, that will be " ++ toString gameState.goldAsked ++ " gold !")
+            case gameState.offerOrGet of
+                Offer ->
+                    ("What do you say I give you " ++ toString gameState.goldOfferGetVal ++ " gold?")
+
+                Get ->
+                    ("Alright, that will be " ++ toString gameState.goldOfferGetVal ++ " gold, please!")
 
         Angry ->
-            ("You flaccid, grotesquely malformed, soft-shelled gastropod! You'll have to give me " ++ toString gameState.goldAsked ++ " gold!")
+            case gameState.offerOrGet of
+                Offer ->
+                    ("Alright, you rancid morsel of cockroach meat, I'll give you your five "
+                        ++ toString gameState.goldOfferGetVal
+                        ++ " gold! And keep the change!"
+                    )
+
+                Get ->
+                    ("You flaccid, grotesquely malformed, soft-shelled gastropod! You'll have to give me "
+                        ++ toString gameState.goldOfferGetVal
+                        ++ " gold!"
+                    )
 
 
 unimplementedPreview : GameState -> String
@@ -391,11 +410,23 @@ listenBlock model =
 moneyBlock : Model -> List (Html Msg)
 moneyBlock model =
     [ cellSubheaderText "Money"
+    , cellBody2Text <| "In shop: " ++ toString model.gameState.gold ++ " gold"
+    , radioGroup
+        model.viewState
+        "offerGetRadioButtons"
+        OfferGetRadioType
+        [ "Offer"
+        , "Get"
+        ]
     , div []
         [ input
             [ Attributes.placeholder "Gold"
             , Attributes.type_ "number"
-            , onInput <| \n -> ChangeMoney <| Result.withDefault 0 <| String.toInt n
+            , Attributes.min "1"
+            , Attributes.max "10000000"
+            , Attributes.value <| toString model.gameState.goldOfferGetVal
+            , onInput <| \n -> ChangeMoney <| Result.withDefault 1 <| String.toInt n
+            , Attributes.style [ ( "border", "3px solid black" ), ( "margin", "20px 30px 20px 30px" ) ]
             ]
             []
         ]
