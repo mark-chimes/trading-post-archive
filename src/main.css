@@ -2,51 +2,100 @@
   background: pink;
 }
 
+:root {
+    --main-bg-color: #795548;
+	--grid-bg-color: #A1887F;
+	--inner-bg-color: #EFEBE9;
+	--border-color: #3E2723;
+	--border-radius: 10px;
+	--button-border-radius: 20px;
+	--heading-color: black;
+	--text-color:  #3E2723 ;
+	--heading-font: "Helvetica", Arial, sans-serif;
+	--text-font: "Helvetica", Arial, sans-serif;
+	--text-size: 16px; 
+}
+
 body {
   font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
   text-align: center;
   color: #293c4b;
-  background: SeaShell ;
+  background: var(--main-bg-color) ;
 }
 
+div.gridBox {
+	border: var(--border-color) 3px solid; 
+	border-radius: var(--border-radius);
+	background: var(--grid-bg-color);
+	margin: 20px 30px 20px 30px; 
+} 
+
 h1 {
-	color: blue;
-	font-size: 30px;
+	color: var(--heading-color);
+	font-size: 34px;
+	font-family: var(--heading-font);
 }
 
 h2 {
-	color: magenta;
+	color: var(--heading-color);
 	font-size: 25px;
+	font-family: var(--text-font);
 }
 
 div.cellBody1Text {
-	font-size: 16px;
-	border: blue 1px solid; 
+	color: var(--text-color);
+	font-size: var(--text-size);
+	border: var(--border-color) 1px solid; 
+	border-radius: var(--border-radius);
 	margin: 20px 30px 20px 30px; 
+	background: var(--inner-bg-color);
+	font-family: var(--text-font)
 } 
 
 div.cellBody2Text {
-	font-size: 20px;
-	border: Magenta 1px solid; 
+	color: var(--text-color);
+	font-size: var(--text-size);
+	border: var(--border-color) 1px solid; 
+	border-radius: var(--border-radius);
 	margin: 20px 30px 20px 30px; 
+	background: var(--inner-bg-color);
+	font-family: var(--text-font)
 } 
 
 div.radioGroup {
-	border: orange 1px solid; 
+	border: var(--border-color) 1px solid; 
+	border-radius: var(--border-radius);
 	margin: 20px 30px 20px 30px; 
+	background: var(--inner-bg-color);
+	font-family: var(--text-font)
 } 
 
 input[type=radio] {
-	margin: 5px 10px 5px 30px; 
 }
 
 label.radioLabel {
+	color: var(--text-color);
+	font-size: var(--text-size);
+	font-family: var(--text-font);
+	margin: 5px 20px 5px 5px;
 }
 
+
+textarea {
+	color: var(--text-color);
+	background: var(--inner-bg-color);
+	border: var(--border-color) 3px solid;
+	border-radius: var(--border-radius);
+	font-size: var(--text-size);	
+	margin: 5px 10px 5px 30px; 
+	font-family: var(--text-font)
+}
+
+
 img {
-  margin: 20px 0;
-  max-width: 200px;
+	margin: 20px 0;
+	max-width: 200px;
 }
 
 span {
@@ -55,16 +104,16 @@ span {
 
 button {
 	margin: 5px 5px;
+	border: var(--border-color) 3px solid; 
+	border-radius: var(--button-border-radius);
+	background: var(--inner-bg-color);
+	font-size: var(--text-size);
+	font-family: var(--text-font)
 }
 
- div.gridBox {
-	border: Chartreuse 3px solid; 
-	margin: 20px 30px 20px 30px; 
-} 
-
-
 ul {
-	border: 1px solid black;
+	border: 1px solid var(--border-color);
+	background: var(--inner-bg-color);
 	margin: 20px 30px 10px 30px;
     list-style: none; 
 	height: 200px;

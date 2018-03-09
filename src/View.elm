@@ -1,7 +1,7 @@
 module View exposing (view)
 
 import Types exposing (..)
-import Html exposing (Html, button, div, text, h1, h2, ul, li, label, input, span)
+import Html exposing (Html, button, div, text, h1, h2, ul, li, label, input, textarea, span)
 import Html.Events exposing (onClick, onInput)
 import Html.Attributes as Attributes exposing (attribute, type_, placeholder, checked, tabindex)
 import Array.Hamt as Array
@@ -110,7 +110,7 @@ tabs model index activeTabIndex selectAction strings =
 
 textField : Model -> Int -> String -> (String -> Msg) -> Html Msg
 textField model index label onChangeTextAction =
-    input [ placeholder label, onInput onChangeTextAction ] []
+    textarea [ placeholder label, onInput onChangeTextAction ] []
 
 
 myButton : Model -> Int -> String -> Msg -> Html Msg
