@@ -37,6 +37,12 @@ type alias GameState =
     , currentlyOfferedTopic : InformationTopic
     , currentCustomer : Customer
     , dialog : List String
+    , currentTrade : Trade
+    }
+
+
+type alias Trade =
+    { goldOffered : Int
     }
 
 
@@ -46,6 +52,7 @@ type Msg
     | SelectRadio RadioType Int
     | Speak String
     | ChangeMoney Int
+    | ConfirmTradeMsg
 
 
 type OfferGet
@@ -73,6 +80,7 @@ type ActionState
     | Inquiry
     | Inform
     | Chatter
+    | ConfirmTrade
 
 
 type ToneState
@@ -95,7 +103,7 @@ type RadioType
 
 
 type alias Customer =
-    { name : String, description : String, appearance : String }
+    { name : String, description : String, appearance : String, money : Int }
 
 
 type alias BuyableItem =

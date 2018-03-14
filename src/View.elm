@@ -196,7 +196,19 @@ logTab model =
 
 tradeTab : Model -> List (Html Msg)
 tradeTab model =
-    [ cellSubheaderText "Trade" ]
+    [ cellSubheaderText "Trade"
+    , cellBody1Text <| displayGoldMessage model.gameState.currentTrade.goldOffered
+    ]
+
+
+displayGoldMessage : Int -> String
+displayGoldMessage gold =
+    if gold == 0 then
+        ""
+    else if gold > 0 then
+        "Offering: " ++ (toString gold) ++ " gold."
+    else
+        "Asking: " ++ (toString -gold) ++ " gold."
 
 
 previewCell : Model -> List (Html Msg)
@@ -286,12 +298,12 @@ moneyPreview gameState =
                     ("What do you say I give you " ++ toString gameState.goldOfferGetVal ++ " gold?")
 
                 Get ->
-                    ("Alright, that will be " ++ toString gameState.goldOfferGetVal ++ " gold, please!")
+                    ("I'm going to need " ++ toString gameState.goldOfferGetVal ++ " gold, please!")
 
         Angry ->
             case gameState.offerOrGet of
                 Offer ->
-                    ("Alright, you rancid morsel of cockroach meat, I'll give you your five "
+                    ("Alright, you rancid morsel of cockroach meat, I'll give you your "
                         ++ toString gameState.goldOfferGetVal
                         ++ " gold! And keep the change!"
                     )
@@ -324,6 +336,7 @@ actionCell model =
         , "Inquiry"
         , "Inform"
         , "Chatter"
+        , "Confirm Trade"
         ]
      , cellSubheaderText "Tone of Voice"
      , radioGroup

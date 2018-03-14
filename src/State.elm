@@ -37,6 +37,9 @@ init =
                 , currentlyOfferedTopic = georgeTopic
                 , currentCustomer = joseph
                 , dialog = []
+                , currentTrade =
+                    { goldOffered = 0
+                    }
                 }
             }
     in
@@ -48,6 +51,7 @@ joseph =
     { name = "Joseph McFinkelstein the Brave"
     , description = "That guy who is looking for the magic sword"
     , appearance = "A short, stout fellow with a long, golden beard matched by a magnificient moustache. He does not seem to care much for formality. "
+    , money = 100
     }
 
 
@@ -210,9 +214,50 @@ updateRadioSelectionGameState gameState radioType index =
             { gameState | offerOrGet = updateOfferOrGet index }
 
 
-appendDialog : GameState -> String -> GameState
-appendDialog gameState string =
-    { gameState | dialog = string :: gameState.dialog }
+speakAndRespond : GameState -> String -> GameState
+speakAndRespond gameState playerSpeech =
+    { gameState
+        | dialog =
+            gameState.dialog
+                |> appendDialog "You" playerSpeech
+                |> appendDialog gameState.currentCustomer.name (npcDialog gameState)
+        , currentTrade = updateTradeGold gameState.offerOrGet gameState.goldOfferGetVal gameState.currentTrade
+    }
+
+
+npcDialog : GameState -> String
+npcDialog gameState =
+    case gameState.actionRadioState of
+        MoneyDiscussion ->
+            case gameState.offerOrGet of
+                Offer ->
+                    "Sure, I'd love " ++ toString gameState.goldOfferGetVal ++ " gold!"
+
+                Get ->
+                    "Well, if I'm going to add " ++ toString gameState.goldOfferGetVal ++ " gold, you'd better make it worth my while!"
+
+        _ ->
+            "Nah, not interested, thanks."
+
+
+updateTradeGold : OfferGet -> Int -> Trade -> Trade
+updateTradeGold offerGet gold trade =
+    { trade | goldOffered = calculateChangeInGoldTrade offerGet trade.goldOffered gold }
+
+
+calculateChangeInGoldTrade : OfferGet -> Int -> Int -> Int
+calculateChangeInGoldTrade offerGet oldGold alteredGold =
+    case offerGet of
+        Offer ->
+            oldGold + alteredGold
+
+        Get ->
+            oldGold - alteredGold
+
+
+appendDialog : String -> String -> List String -> List String
+appendDialog personName string dialog =
+    (personName ++ ": " ++ string) :: dialog
 
 
 changeMoney : GameState -> Int -> GameState
@@ -254,10 +299,13 @@ update msg model =
             )
 
         Speak string ->
-            ( { model | gameState = appendDialog model.gameState string }, Cmd.none )
+            ( { model | gameState = speakAndRespond model.gameState string }, Cmd.none )
 
         ChangeMoney int ->
             ( { model | gameState = changeMoney model.gameState int }, Cmd.none )
+
+        ConfirmTradeMsg ->
+            ( model, Cmd.none )
 
 
 
